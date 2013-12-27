@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<phpunit bootstrap="./tests/bootstrap.php" colors="true">
+    <testsuites>
+        <testsuite name="FDF Generator Test Suite">
+            <directory suffix="Test.php">./tests/Wesnick/</directory>
+        </testsuite>
+    </testsuites>
+
+    <php>
+
+    </php>
+
+    <filter>
+        <whitelist>
+            <directory suffix=".php">./lib/Wesnick/FdfGenerator/</directory>
+        </whitelist>
+    </filter>
+</phpunit>

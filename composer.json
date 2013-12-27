@@ -1,0 +1,24 @@
+{
+    "name": "wesnick/fdf-utility",
+    "type": "library",
+    "description": "FDF File Utility for PDF Forms",
+    "keywords": ["fdf", "pdf", "forms"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Wesley O. Nichols",
+            "email": "wesley.o.nichols@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.1",
+        "shuble/slurpy": "dev-master",
+        "symfony/console": "2.3.*@dev"
+    },
+    "autoload": {
+        "psr-0": {
+            "Wesnick": "src/"
+        }
+    },
+    "minimum-stability" : "dev"
+}
