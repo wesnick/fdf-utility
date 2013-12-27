@@ -1,0 +1,14 @@
+#!/usr/bin/env php
+<?php
+
+require_once __DIR__ . '/../vendor/autoload.php';
+
+use Symfony\Component\Console\Application;
+
+$application = new Application();
+$application->addCommands(array(
+    new \Wesnick\FdfUtility\Command\GenerateExamplePdfCommand(),
+    new \Wesnick\FdfUtility\Command\GenerateCsvExportCommand(),
+));
+
+$application->run();

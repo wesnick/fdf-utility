@@ -98,6 +98,11 @@ class PdfForm
                     $csv_entry[4] = '';
                     $csv_entry[5] = $field->getExampleValue();
 
+                    // Handle possible array for multi-select fields
+                    if (is_array($csv_entry[5])) {
+                        $csv_entry[5] = "[" . implode(",", $csv_entry[5]) . "]";
+                    }
+
                 }
             }
 
