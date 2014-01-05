@@ -73,7 +73,7 @@ abstract class PdfField
     /**
      * @var string
      */
-    protected $justification;
+    protected $justification = 'Left';
 
     /**
      * @var int
@@ -83,7 +83,7 @@ abstract class PdfField
     /**
      * @var string
      */
-    protected $defaultValue;
+    protected $defaultValue = null;
 
     /**
      * @var string
@@ -93,7 +93,23 @@ abstract class PdfField
     /**
      * @var array
      */
-    protected $options;
+    protected $options = array();
+
+    /**
+     * @param string        $name
+     * @param int           $flag
+     * @param string|null   $defaultValue
+     * @param array         $options
+     * @param string|null   $value
+     */
+    function __construct($name, $flag, $defaultValue = null, $options = array(), $value = null)
+    {
+        $this->name = $name;
+        $this->flag = $flag;
+        $this->defaultValue = $defaultValue;
+        $this->options = $options;
+        $this->value = $value;
+    }
 
 
     /**

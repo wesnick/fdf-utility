@@ -5,12 +5,8 @@ FDF Utility Library for PHP
 
 This library produces FDF files for PDF Forms.
 
-*note*
-This is a work in progress.
-
 Left to finish
-- add tests for values
-- handle default values more intelligently
+- add additional validation and tests for invalid configurations
 - implement signature field support
 
 
@@ -27,12 +23,18 @@ $ /path/to/fdf-utility/bin/fdf wesnick:fdf:csv-export /path/to/my/pdf.pdf path/t
 $ /path/to/fdf-utility/bin/fdf wesnick:fdf:example-pdf /path/to/my/emtpy-pdf.pdf path/to/my/filled-pdf.pdf --pdftk=/path/to/pdftk
 ```
 
-You can also use the lirbary's low-level components directly.  The class PdfForm is a useful reference point.
+You can also use the lirbary's components directly.  The class PdfForm is a useful reference point.
 
 
 ## Installation
 
 Use composer.
+
+    {
+        "require": {
+            "wesnick/fdf-utility": "dev-master@dev"
+        }
+    }
 
 ## Requirements
 

@@ -14,14 +14,16 @@ class ChoiceField extends PdfField
 
     public function getEscapedValue()
     {
-        if ($this->isMultiSelect() && is_array($this->value)) {
+        $value = is_null($this->value) ? $this->defaultValue : $this->value;
+
+        if ($this->isMultiSelect() && is_array($value)) {
             $out = '';
-            foreach ($this->value as $val) {
+            foreach ($value as $val) {
                 $out .= '(' . FdfWriter::escapePdfName($val) . ')';
             }
             return '[ ' . $out . ' ]';
         } else {
-            return '(' . FdfWriter::escapePdfName($this->value) . ')';
+            return '(' . FdfWriter::escapePdfName($value) . ')';
         }
     }
 

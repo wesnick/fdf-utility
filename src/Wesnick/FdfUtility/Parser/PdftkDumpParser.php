@@ -140,46 +140,40 @@ class PdftkDumpParser
      */
     private function createFieldFromPdftkDump($dump)
     {
+
+        $name = $dump['FieldName'];
+        $flag = $dump['FieldFlags'];
+        $value = isset($dump['FieldValue']) ? $dump['FieldValue'] : null;
+        $defaultValue = isset($dump['FieldValueDefault']) ? $dump['FieldValueDefault'] : null;
+
+        $options = array();
+        if (!empty($dump['FieldStateOption'])) {
+            foreach ($dump['FieldStateOption'] as $opt) {
+                $options[$opt] = $opt;
+            }
+        }
+
         switch ($dump['FieldType']) {
             case 'Button':
-                $field = new ButtonField();
+                $field = new ButtonField($name, $flag, $defaultValue, $options, $value);
                 break;
             case 'Choice':
-                $field = new ChoiceField();
+                $field = new ChoiceField($name, $flag, $defaultValue, $options, $value);
                 break;
             case 'Text':
-                $field = new TextField();
+                $field = new TextField($name, $flag, $defaultValue, $options, $value);
                 break;
             default:
                 throw new \Exception(sprintf("Unrecognized Field Type %s", $dump['FieldType']));
         }
 
-        if (!isset($dump['FieldJustification'])) {
-            $dump['FieldJustification'] = null;
+        if (isset($dump['FieldJustification'])) {
+            $field->setJustification($dump['FieldJustification']);
         }
 
-        $field
-            ->setName($dump['FieldName'])
-            ->setJustification($dump['FieldJustification'])
-            ->setFlag($dump['FieldFlags'])
-        ;
-
-        if (isset($dump['FieldValue'])) {
-            $field->setValue($dump['FieldValue']);
-        }
-
-        if (isset($dump['FieldValueDefault'])) {
-            $field->setDefaultValue($dump['FieldValueDefault']);
-        }
 
         if (isset($dump['FieldMaxLength'])) {
             $field->setMaxLength($dump['FieldMaxLength']);
-        }
-
-        if (!empty($dump['FieldStateOption'])) {
-            foreach ($dump['FieldStateOption'] as $opt) {
-                $field->addOption($opt, $opt);
-            }
         }
 
         return $field;

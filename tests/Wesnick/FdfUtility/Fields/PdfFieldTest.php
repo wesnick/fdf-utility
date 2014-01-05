@@ -45,7 +45,7 @@ class PdfFieldTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->stub = $this->getMockForAbstractClass(__NAMESPACE__ . '\\PdfField');
+        $this->stub = $this->getMockForAbstractClass(__NAMESPACE__ . '\\PdfField', array('stub', 0));
 
         $fixture = __DIR__ . '/../../../fixtures/pdftk_field_output.txt';
         $parser = new PdftkDumpParser($fixture);

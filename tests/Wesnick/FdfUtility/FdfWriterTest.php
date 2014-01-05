@@ -50,11 +50,9 @@ class FdfWriterTest extends \PHPUnit_Framework_TestCase
     public function testAddFields()
     {
 
-        $f1 = new TextField();
-        $f1->setName('test.string');
+        $f1 = new TextField('test.string', 0);
 
-        $f2 = new TextField();
-        $f2->setName('test.string2');
+        $f2 = new TextField('test.string2', 0);
 
         $expected = array(
             'test' => array(

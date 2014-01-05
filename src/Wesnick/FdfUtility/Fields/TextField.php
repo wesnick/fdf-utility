@@ -36,7 +36,10 @@ class TextField extends PdfField
 
     public function getEscapedValue()
     {
-        return '(' .FdfWriter::escapePdfString($this->value) . ')';
+
+        $value = is_null($this->value) ? $this->defaultValue : $this->value;
+
+        return '(' .FdfWriter::escapePdfString($value) . ')';
     }
 
     /**

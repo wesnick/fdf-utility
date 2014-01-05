@@ -70,4 +70,20 @@ class TextFieldTest extends PdfFieldTest
         }
     }
 
+
+    public function testDefaultValueIsRespected()
+    {
+
+        $field = new TextField('default_value', 0, 'default', array(), null);
+
+        $this->assertEquals('(default)', $field->getEscapedValue(), "Default Value is respected on null value");
+
+        $field->setValue('value');
+        $this->assertEquals('(value)', $field->getEscapedValue(), "Default Value is ignored if value not null");
+
+        $field->setValue('');
+        $this->assertEquals('(\)', $field->getEscapedValue(), "Default Value is ignored if value is empty");
+
+    }
+
 }

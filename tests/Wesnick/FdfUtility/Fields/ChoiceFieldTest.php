@@ -56,4 +56,19 @@ class ChoiceFieldTest extends PdfFieldTest
         }
     }
 
+
+    public function testDefaultValueIsRespected()
+    {
+
+        $field = new ChoiceField('default_value', 0, 'default', array('default' => 'default', 'default1' => 'default1'), null);
+
+        $this->assertEquals('(default)', $field->getEscapedValue(), "Default Value is respected on null value");
+
+        $field->setValue('default1');
+        $this->assertEquals('(default1)', $field->getEscapedValue(), "Default Value is ignored if value not null");
+
+        $field->setValue('');
+        $this->assertEquals('(\000)', $field->getEscapedValue(), "Default Value is ignored if value is empty");
+
+    }
 }
