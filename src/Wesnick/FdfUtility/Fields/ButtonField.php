@@ -29,10 +29,7 @@ class ButtonField extends PdfField
         if ($this->isPushButton()) {
             return null;
         }
-        // Let's always check checkboxes
-        if ($this->isCheckBox()) {
-            return 'Yes';
-        }
+
         $keys = array_keys($this->options);
         return $this->options[$keys[mt_rand(0, (count($keys) - 1))]];
     }
