@@ -164,7 +164,7 @@ class PdftkDumpParser
                 $field = new TextField($name, $flag, $defaultValue, $options, $value);
                 break;
             default:
-                throw new \Exception(sprintf("Unrecognized Field Type %s", $dump['FieldType']));
+                return null;
         }
 
         if (isset($dump['FieldJustification'])) {
