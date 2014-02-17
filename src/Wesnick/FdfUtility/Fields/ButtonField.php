@@ -58,4 +58,8 @@ class ButtonField extends PdfField
         return $this->checkBitValue(PdfField::IN_UNISON);
     }
 
+    public function getType()
+    {
+        return 'button';
+    }
 }

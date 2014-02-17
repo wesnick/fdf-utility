@@ -79,4 +79,8 @@ class ChoiceField extends PdfField
         return $this->checkBitValue(PdfField::NO_SPELL_CHECK);
     }
 
+    public function getType()
+    {
+        return 'choice';
+    }
 }

@@ -60,6 +60,10 @@ abstract class PdfField
         self::COMMIT_ON_CHANGE  => 'Commit on Change',
     );
 
+    /** @var int */
+    protected $id;
+    protected $document;
+
     /**
      * @var string
      */
@@ -79,6 +83,11 @@ abstract class PdfField
      * @var int
      */
     protected $flag;
+
+    /**
+     * @var string
+     */
+    protected $question;
 
     /**
      * @var string
@@ -220,6 +229,14 @@ abstract class PdfField
         return $this->value;
     }
 
+    /**
+     * @return int
+     */
+    public function getFlag()
+    {
+        return $this->flag;
+    }
+
 
 
     /**
@@ -288,6 +305,25 @@ abstract class PdfField
         return $this->checkBitValue(self::NO_EXPORT);
     }
 
+    /**
+     * @param string $question
+     *
+     * @return PdfField
+     */
+    public function setQuestion($question)
+    {
+        $this->question = $question;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getQuestion()
+    {
+        return $this->question;
+    }
+
     /*
      * Button Field Convenience Tests
      */
@@ -346,6 +382,9 @@ abstract class PdfField
      */
     public abstract function getExampleValue();
 
-
+    /**
+     * @return string
+     */
+    public abstract function getType();
 
 }
