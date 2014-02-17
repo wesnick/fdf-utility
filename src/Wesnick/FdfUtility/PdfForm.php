@@ -17,16 +17,17 @@ class PdfForm
 {
 
     /**
-     * @var string
-     */
-    private $pdf;
-
-    /**
      * @var PdfField[]
      */
-    private $fields;
+    protected $fields;
 
-    private function extractFieldsFromPdf(Factory $pdftk, $pdf)
+    /**
+     * @param Factory $pdftk
+     * @param $pdf
+     *
+     * @return Fields\PdfField[]
+     */
+    public static function extractFieldsFromPdf(Factory $pdftk, $pdf)
     {
 
         $fields_dump = tempnam(sys_get_temp_dir(), 'fdf_dump');
@@ -35,22 +36,26 @@ class PdfForm
         $dataDumper->generate(array(), true);
 
         $parser = new PdftkDumpParser($fields_dump);
-        $this->fields = $parser->parse();
+        $fields = $parser->parse();
         unlink($fields_dump);
-        return $this->fields;
+        return $fields;
     }
 
-    public function generatePdfExample(Factory $pdftk, $sourcePdf, $targetPdf)
+    public static function generatePdfExample(Factory $pdftk, $sourcePdf, $targetPdf)
     {
-        $this->fields = $this->extractFieldsFromPdf($pdftk, $sourcePdf);
+        $fields = self::extractFieldsFromPdf($pdftk, $sourcePdf);
 
-        foreach ($this->fields as $field) {
+        if (! $fields) {
+            throw new \RuntimeException("PDF does not have any fields");
+        }
+
+        foreach ($fields as $field) {
             $field->setValue($field->getExampleValue());
         }
 
         $fdf_file = tempnam(sys_get_temp_dir(), 'fdf');
 
-        $writer = new FdfWriter($this->fields);
+        $writer = new FdfWriter($fields);
         $writer->generate();
         $writer->save($fdf_file);
 
@@ -59,9 +64,9 @@ class PdfForm
         unlink($fdf_file);
     }
 
-    public function generateCsvExport(Factory $pdftk, $sourcePdf, $targetFile)
+    public static function generateCsvExport(Factory $pdftk, $sourcePdf, $targetFile)
     {
-        $this->fields = $this->extractFieldsFromPdf($pdftk, $sourcePdf);
+        $fields = self::extractFieldsFromPdf($pdftk, $sourcePdf);
 
         $texts = array();
         $buttons = array();
@@ -76,11 +81,11 @@ class PdfForm
             'example_value',
         );
 
-        foreach ($this->fields as $field) {
+        foreach ($fields as $field) {
 
             $csv_entry = array(
                 $field->getName(),
-                get_class($field),
+                $field->getType(),
                 $field->getDescription(),
                 '',
                 '',
