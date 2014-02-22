@@ -62,7 +62,7 @@ class FdfWriter
                 $this->writeFields($field);
                 $this->closeKids();
             } elseif ($field instanceof PdfField) {
-                if ($field->isPushButton()) {
+                if ($field->isPushButton() || null === $field->getValue()) {
                     continue;
                 }
                 $this->appendKey($key);
