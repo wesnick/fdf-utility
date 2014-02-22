@@ -9,17 +9,11 @@ namespace Wesnick\FdfUtility;
 use Shuble\Slurpy\Factory;
 use Wesnick\FdfUtility\Fields\ButtonField;
 use Wesnick\FdfUtility\Fields\ChoiceField;
-use Wesnick\FdfUtility\Fields\PdfField;
 use Wesnick\FdfUtility\Fields\TextField;
 use Wesnick\FdfUtility\Parser\PdftkDumpParser;
 
 class PdfForm
 {
-
-    /**
-     * @var PdfField[]
-     */
-    protected $fields;
 
     /**
      * @param Factory $pdftk
