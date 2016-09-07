@@ -26,7 +26,7 @@ class PdfForm
 
         $fields_dump = tempnam(sys_get_temp_dir(), 'fdf_dump');
 
-        $dataDumper = $pdftk->dumpDataFields($pdf, $fields_dump);
+        $dataDumper = $pdftk->dumpDataFieldsUtf8($pdf, $fields_dump);
         $dataDumper->generate(array(), true);
 
         $parser = new PdftkDumpParser($fields_dump);
