@@ -5,4 +5,4 @@ php:
 sudo: false
 before_script:
     - composer install --dev --no-interaction
-    - vendir/bin/phpunit
+    - vendor/bin/phpunit
