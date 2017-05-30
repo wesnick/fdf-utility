@@ -109,7 +109,7 @@ abstract class PdfField
     public function __construct($name, $flag, $defaultValue = null, $options = [], $value = null)
     {
         $this->name         = $name;
-        $this->flag         = $flag;
+        $this->flag         = (int) $flag;
         $this->defaultValue = $defaultValue;
         $this->options      = $options;
         $this->value        = $value;
