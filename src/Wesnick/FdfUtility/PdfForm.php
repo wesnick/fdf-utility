@@ -21,7 +21,7 @@ class PdfForm
         $fields_dump = tempnam(sys_get_temp_dir(), 'fdf_dump');
 
         $processBuilder = self::buildPdftkProcess($pdftkBinary);
-        $processBuilder->setArguments([$pdf, 'dump_data_fields_utf8', $fields_dump]);
+        $processBuilder->setArguments([$pdf, 'dump_data_fields_utf8', 'output', $fields_dump]);
         $processBuilder->getProcess()->mustRun();
 
         $parser = new PdftkDumpParser($fields_dump);
