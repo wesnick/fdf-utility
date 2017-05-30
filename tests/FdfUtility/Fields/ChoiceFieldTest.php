@@ -1,11 +1,13 @@
 <?php
+
+namespace Wesnick\Tests\FdfUtility\Fields;
+
+use Wesnick\FdfUtility\Fields\ChoiceField;
+use Wesnick\FdfUtility\Fields\PdfField;
+
 /**
- * @file ChoiceFieldTest.php
+ * @author Wesley O. Nichols <spanishwes@gmail.com>
  */
-
-namespace Wesnick\FdfUtility\Fields;
-
-
 class ChoiceFieldTest extends PdfFieldTest
 {
 

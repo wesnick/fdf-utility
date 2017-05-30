@@ -1,17 +1,14 @@
 <?php
-/**
- * @file
- * TextField.php
- */
 
 namespace Wesnick\FdfUtility\Fields;
 
-
 use Wesnick\FdfUtility\FdfWriter;
 
+/**
+ * @author Wesley O. Nichols <spanishwes@gmail.com>
+ */
 class TextField extends PdfField
 {
-
     /**
      * @var int
      */
@@ -33,13 +30,11 @@ class TextField extends PdfField
         return $this->maxLength;
     }
 
-
     public function getEscapedValue()
     {
+        $value = null === $this->value ? $this->defaultValue : $this->value;
 
-        $value = is_null($this->value) ? $this->defaultValue : $this->value;
-
-        return '(' .FdfWriter::escapePdfString($value) . ')';
+        return '('.FdfWriter::escapePdfString($value).')';
     }
 
     /**
@@ -50,7 +45,7 @@ class TextField extends PdfField
         $value = $this->name;
         // Multilines get extra lines
         if ($this->isMultiLine()) {
-            $value .= "\n" . "Multi-line next line." . "\n" . "More Lines...";
+            $value .= "\n".'Multi-line next line.'."\n".'More Lines...';
         }
         // Comb formatting fills entire comb
         if ($this->isCombFormatting()) {
@@ -58,7 +53,7 @@ class TextField extends PdfField
         }
         // Format a rich text string
         if ($this->isRichText()) {
-            $value = "<body><b>" . $value . "</b></body>";
+            $value = '<body><b>'.$value.'</b></body>';
         }
 
         return $value;

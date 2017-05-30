@@ -1,10 +1,7 @@
 <?php
 
-
 namespace Wesnick\FdfUtility\Command;
 
-
-use Shuble\Slurpy\Factory as PDFTKFactory;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -12,6 +9,9 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Wesnick\FdfUtility\PdfForm;
 
+/**
+ * @author Wesley O. Nichols <spanishwes@gmail.com>
+ */
 class GenerateCsvExportCommand extends Command
 {
     protected function configure()
@@ -41,16 +41,11 @@ class GenerateCsvExportCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-
-        $source = $input->getArgument('source-pdf');
-        $target = $input->getArgument('target-csv');
+        $source     = $input->getArgument('source-pdf');
+        $target     = $input->getArgument('target-csv');
         $pdftk_path = $input->getOption('pdftk');
 
-        $pdftk = new PDFTKFactory($pdftk_path);
-
         $pdfForm = new PdfForm();
-        $pdfForm->generateCsvExport($pdftk, $source, $target);
-
+        $pdfForm->generateCsvExport($pdftk_path, $source, $target);
     }
-
 }

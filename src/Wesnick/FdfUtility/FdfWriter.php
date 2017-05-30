@@ -1,13 +1,12 @@
 <?php
-/**
- * @file FdfWriter.php
- */
 
 namespace Wesnick\FdfUtility;
 
-
 use Wesnick\FdfUtility\Fields\PdfField;
 
+/**
+ * @author Wesley O. Nichols <spanishwes@gmail.com>
+ */
 class FdfWriter
 {
     const HEADER                =   "%FDF-1.2\x0d%\xe2\xe3\xcf\xd3\x0d\x0a";
@@ -16,9 +15,8 @@ class FdfWriter
     const ROOT_DICTIONARY_CLOSE =   ">> \x0dendobj\x0d";
     const FDF_DICTIONARY_OPEN   =   "\x0d/FDF << ";
     const FDF_DICTIONARY_CLOSE  =   ">> \x0d";
-    const FIELD_TAG_OPEN        =   "/Fields [ ";
+    const FIELD_TAG_OPEN        =   '/Fields [ ';
     const FIELD_TAG_CLOSE       =   "] \x0d";
-
 
     /**
      * @var string
@@ -28,9 +26,9 @@ class FdfWriter
     /**
      * @var array
      */
-    private $fields = array();
+    private $fields = [];
 
-    function __construct(array $fields = array())
+    public function __construct(array $fields = [])
     {
         $this->buffer = '';
         foreach ($fields as $field) {
@@ -38,24 +36,105 @@ class FdfWriter
         }
     }
 
+    public function __toString()
+    {
+        return $this->buffer;
+    }
+
     public function addField(PdfField $field)
     {
-
         $nameParts = explode('.', $field->getName());
 
-        $fields =& $this->fields;
+        $fields =&$this->fields;
         while (!empty($nameParts)) {
-            $key = array_shift($nameParts);
-            $fields =& $fields[$key];
+            $key    = array_shift($nameParts);
+            $fields =&$fields[$key];
         }
 
         $fields = $field;
     }
 
+    /**
+     * @param $string
+     *
+     * @return string
+     */
+    public static function escapePdfString($string)
+    {
+        $escaped = '';
+
+        foreach (str_split($string) as $char) {
+            switch ($ordinal = ord($char)) {
+                // If open paren, close paren, or backslash, escape character
+                case in_array($ordinal, [0x28, 0x29, 0x5c], true):
+                    // backslash == chr(0x5c)
+                    $escaped .= chr(0x5c).$char;
+                    break;
+                case $ordinal < 32:
+                case $ordinal > 126:
+                    $escaped .= sprintf('\\%03o', $ordinal);
+                    break;
+                default:
+                    $escaped .= $char;
+            }
+        }
+
+        return $escaped;
+    }
+
+    /**
+     * @param $string
+     *
+     * @return string
+     */
+    public static function escapePdfName($string)
+    {
+        $escaped = '';
+
+        foreach (str_split($string) as $char) {
+            switch ($ordinal = ord($char)) {
+                // If ascii not between 33 and 126, or a hash mark, use a hex code
+                case $ordinal < 33:
+                case $ordinal > 126:
+                case $ordinal === 23:
+                    $escaped .= sprintf('\\%03o', $ordinal);
+                    break;
+                default:
+                    $escaped .= $char;
+            }
+        }
+
+        return $escaped;
+    }
+
+    public function generate()
+    {
+        $this->buffer  = self::HEADER;
+        $this->buffer .= self::ROOT_DICTIONARY_OPEN;
+        $this->buffer .= self::FDF_DICTIONARY_OPEN;
+        $this->buffer .= self::FIELD_TAG_OPEN;
+        $this->writeFields($this->fields);
+        $this->buffer .= self::FIELD_TAG_CLOSE;
+        $this->buffer .= self::FDF_DICTIONARY_CLOSE;
+        $this->buffer .= self::ROOT_DICTIONARY_CLOSE;
+        $this->buffer .= self::FOOTER;
+    }
+
+    /**
+     * Writes contents as a file.
+     *
+     * @param string $filename
+     *
+     * @return int|bool Bytes written
+     */
+    public function save($filename)
+    {
+        return file_put_contents($filename, $this->buffer);
+    }
+
     private function writeFields($fields)
     {
         foreach ($fields as $key => $field) {
-
             if (is_array($field)) {
                 $this->appendKey($key);
                 $this->openKids();
@@ -89,96 +168,14 @@ class FdfWriter
     private function appendValue(PdfField $field)
     {
         $valueFormat = $field->isRichText() ? 'RV' : 'V';
-        $this->buffer .= sprintf("/%s %s %s >>", $valueFormat, $field->getEscapedValue($this), $this->getFieldFlags($field)) . "\n";
+        $this->buffer .= sprintf('/%s %s %s >>', $valueFormat, $field->getEscapedValue($this), $this->getFieldFlags($field))."\n";
     }
 
     private function getFieldFlags(PdfField $field)
     {
-        $flags = $field->isHidden() ? "/SetF 2 " : "/ClrF 2 ";
-        $flags .= $field->isReadOnly() ? "/SetFf 1 " : "/ClrFf 1 ";
+        $flags = $field->isHidden() ? '/SetF 2 ' : '/ClrF 2 ';
+        $flags .= $field->isReadOnly() ? '/SetFf 1 ' : '/ClrFf 1 ';
+
         return $flags;
     }
-
-    /**
-     * @param $string
-     * @return string
-     */
-    public static function escapePdfString($string)
-    {
-
-        $escaped = '';
-
-        foreach (str_split($string) as $char) {
-            switch ($ordinal = ord($char)) {
-                // If open paren, close paren, or backslash, escape character
-                case in_array($ordinal, array(0x28, 0x29, 0x5c)):
-                    // backslash == chr(0x5c)
-                    $escaped .= chr(0x5c) . $char;
-                    break;
-                case $ordinal < 32:
-                case $ordinal > 126:
-                    $escaped .= sprintf("\\%03o", $ordinal);
-                    break;
-                default:
-                    $escaped .= $char;
-            }
-        }
-
-        return $escaped;
-    }
-
-    /**
-     * @param $string
-     * @return string
-     */
-    public static function escapePdfName($string)
-    {
-        $escaped = '';
-
-        foreach (str_split($string) as $char) {
-            switch ($ordinal = ord($char)) {
-                // If ascii not between 33 and 126, or a hash mark, use a hex code
-                case $ordinal < 33:
-                case $ordinal > 126:
-                case $ordinal == 23:
-                    $escaped .= sprintf("\\%03o", $ordinal);
-                    break;
-                default:
-                    $escaped .= $char;
-            }
-        }
-
-        return $escaped;
-    }
-
-    public function generate()
-    {
-        $this->buffer  = self::HEADER;
-        $this->buffer .= self::ROOT_DICTIONARY_OPEN;
-        $this->buffer .= self::FDF_DICTIONARY_OPEN;
-        $this->buffer .= self::FIELD_TAG_OPEN;
-        $this->writeFields($this->fields);
-        $this->buffer .= self::FIELD_TAG_CLOSE;
-        $this->buffer .= self::FDF_DICTIONARY_CLOSE;
-        $this->buffer .= self::ROOT_DICTIONARY_CLOSE;
-        $this->buffer .= self::FOOTER;
-
-    }
-
-    /**
-     * Writes contents as a file
-     *
-     * @param string $filename
-     *
-     * @return integer|boolean Bytes written
-     */
-    public function save($filename)
-    {
-        return file_put_contents($filename, $this->buffer);
-    }
-
-    function __toString()
-    {
-        return $this->buffer;
-    }
-} 
+}

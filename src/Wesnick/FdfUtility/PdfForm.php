@@ -1,46 +1,42 @@
 <?php
-/**
- * @file PdfForm.php
- */
 
 namespace Wesnick\FdfUtility;
 
-
-use Shuble\Slurpy\Factory;
-use Wesnick\FdfUtility\Fields\ButtonField;
-use Wesnick\FdfUtility\Fields\ChoiceField;
-use Wesnick\FdfUtility\Fields\TextField;
+use Symfony\Component\Process\ProcessBuilder;
 use Wesnick\FdfUtility\Parser\PdftkDumpParser;
 
+/**
+ * @author Wesley O. Nichols <spanishwes@gmail.com>
+ */
 class PdfForm
 {
-
     /**
-     * @param Factory $pdftk
-     * @param $pdf
+     * @param string $pdftkBinary The path to pdftk binary
+     * @param string $pdf         The path to the PDF file
      *
      * @return Fields\PdfField[]
      */
-    public static function extractFieldsFromPdf(Factory $pdftk, $pdf)
+    public static function extractFieldsFromPdf($pdftkBinary, $pdf)
     {
-
         $fields_dump = tempnam(sys_get_temp_dir(), 'fdf_dump');
 
-        $dataDumper = $pdftk->dumpDataFieldsUtf8($pdf, $fields_dump);
-        $dataDumper->generate(array(), true);
+        $processBuilder = self::buildPdftkProcess($pdftkBinary);
+        $processBuilder->setArguments([$pdf, 'dump_data_fields_utf8', $fields_dump]);
+        $processBuilder->getProcess()->mustRun();
 
         $parser = new PdftkDumpParser($fields_dump);
         $fields = $parser->parse();
         unlink($fields_dump);
+
         return $fields;
     }
 
-    public static function generatePdfExample(Factory $pdftk, $sourcePdf, $targetPdf)
+    public static function generatePdfExample($pdftkBinary, $sourcePdf, $targetPdf)
     {
-        $fields = self::extractFieldsFromPdf($pdftk, $sourcePdf);
+        $fields = self::extractFieldsFromPdf($pdftkBinary, $sourcePdf);
 
-        if (! $fields) {
-            throw new \RuntimeException("PDF does not have any fields");
+        if (empty($fields)) {
+            throw new \RuntimeException('PDF does not have any fields');
         }
 
         foreach ($fields as $field) {
@@ -53,64 +49,64 @@ class PdfForm
         $writer->generate();
         $writer->save($fdf_file);
 
-        $formFiller = $pdftk->fillForm($sourcePdf, $fdf_file, $targetPdf);
-        $formFiller->generate();
+        $processBuilder = self::buildPdftkProcess($pdftkBinary);
+        $processBuilder->setArguments([$sourcePdf, 'fill_form', $fdf_file, 'output', $targetPdf]);
+        $processBuilder->getProcess()->mustRun();
+
         unlink($fdf_file);
     }
 
-    public static function generateCsvExport(Factory $pdftk, $sourcePdf, $targetFile)
+    public static function generateCsvExport($pdftkBinary, $sourcePdf, $targetFile)
     {
-        $fields = self::extractFieldsFromPdf($pdftk, $sourcePdf);
+        $fields = self::extractFieldsFromPdf($pdftkBinary, $sourcePdf);
 
-        $texts = array();
-        $buttons = array();
+        $texts   = [];
+        $buttons = [];
 
-        $csv_fields = array();
-        $csv_fields[] = array(
+        $csv_fields   = [];
+        $csv_fields[] = [
             'name',
             'type',
             'description',
             'options',
             'max_length',
             'example_value',
-        );
+        ];
 
         foreach ($fields as $field) {
-
-            $csv_entry = array(
+            $csv_entry = [
                 $field->getName(),
                 $field->getType(),
                 $field->getDescription(),
                 '',
                 '',
-                ''
-            );
+                '',
+            ];
 
-            if ($field instanceof ButtonField || $field instanceof ChoiceField) {
-                /** @var $field ButtonField */
+            if ($field instanceof Fields\ButtonField || $field instanceof Fields\ChoiceField) {
+                /** @var $field Fields\ButtonField */
                 if ($field->getOptions()) {
-                    $options = array_values(array_flip($field->getOptions()));
-                    $value = $options[mt_rand(0, (count($options) - 1))];
+                    $options                    = array_values(array_flip($field->getOptions()));
+                    $value                      = $options[mt_rand(0, (count($options) - 1))];
                     $buttons[$field->getName()] = $value;
 
-                    $csv_entry[3] = implode("|", $options);
+                    $csv_entry[3] = implode('|', $options);
                     $csv_entry[4] = '';
                     $csv_entry[5] = $field->getExampleValue();
 
                     // Handle possible array for multi-select fields
                     if (is_array($csv_entry[5])) {
-                        $csv_entry[5] = "[" . implode(",", $csv_entry[5]) . "]";
+                        $csv_entry[5] = '['.implode(',', $csv_entry[5]).']';
                     }
-
                 }
             }
 
-            if ($field instanceof TextField) {
+            if ($field instanceof Fields\TextField) {
                 // Just use the name as the value
-                /** @var $field TextField */
+                /* @var $field Fields\TextField */
                 $texts[$field->getName()] = $field->getName();
-                $csv_entry[4] = $field->getMaxLength();
-                $csv_entry[5] = $field->getExampleValue();
+                $csv_entry[4]             = $field->getMaxLength();
+                $csv_entry[5]             = $field->getExampleValue();
             }
 
             $csv_fields[] = $csv_entry;
@@ -123,4 +119,16 @@ class PdfForm
         fclose($handle);
     }
 
-} 
+    /**
+     * @param string $pdftkBinary
+     *
+     * @return ProcessBuilder
+     */
+    private static function buildPdftkProcess($pdftkBinary)
+    {
+        $processBuilder = new ProcessBuilder();
+        $processBuilder->setPrefix($pdftkBinary);
+
+        return $processBuilder;
+    }
+}

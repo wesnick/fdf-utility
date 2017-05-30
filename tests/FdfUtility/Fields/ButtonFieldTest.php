@@ -1,11 +1,12 @@
 <?php
+
+namespace Wesnick\Tests\FdfUtility\Fields;
+
+use Wesnick\FdfUtility\Fields\PdfField;
+
 /**
- * @file ButtonFieldTest.php
+ * @author Wesley O. Nichols <spanishwes@gmail.com>
  */
-
-namespace Wesnick\FdfUtility\Fields;
-
-
 class ButtonFieldTest extends PdfFieldTest
 {
 

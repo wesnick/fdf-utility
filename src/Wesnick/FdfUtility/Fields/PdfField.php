@@ -1,15 +1,12 @@
 <?php
-/**
- * @file
- * AbstractField.php
- */
 
 namespace Wesnick\FdfUtility\Fields;
 
-
+/**
+ * @author Wesley O. Nichols <spanishwes@gmail.com>
+ */
 abstract class PdfField
 {
-
     // Bitmask      // Binary Position (1-based index)
     const READ_ONLY         = 1;            // 1
     const REQUIRED          = 2;            // 2
@@ -31,14 +28,12 @@ abstract class PdfField
     const IN_UNISON         = 33554432;     // 26
     const COMMIT_ON_CHANGE  = 67108864;     // 27
 
-
-
     /**
-     * Human-readable description of bit-masks
+     * Human-readable description of bit-masks.
      *
      * @var array
      */
-    static public $flags = array(
+    public static $flags = [
         self::READ_ONLY         => 'Read Only',
         self::REQUIRED          => 'Required',
         self::NO_EXPORT         => 'No Export',
@@ -58,7 +53,7 @@ abstract class PdfField
         self::RICH_TEXT         => 'Rich Text',
         self::IN_UNISON         => 'In Unison',
         self::COMMIT_ON_CHANGE  => 'Commit on Change',
-    );
+    ];
 
     /** @var int */
     protected $id;
@@ -102,28 +97,28 @@ abstract class PdfField
     /**
      * @var array
      */
-    protected $options = array();
+    protected $options = [];
 
     /**
-     * @param string        $name
-     * @param int           $flag
-     * @param string|null   $defaultValue
-     * @param array         $options
-     * @param string|null   $value
+     * @param string      $name
+     * @param int         $flag
+     * @param string|null $defaultValue
+     * @param array       $options
+     * @param string|null $value
      */
-    function __construct($name, $flag, $defaultValue = null, $options = array(), $value = null)
+    public function __construct($name, $flag, $defaultValue = null, $options = [], $value = null)
     {
-        $this->name = $name;
-        $this->flag = $flag;
+        $this->name         = $name;
+        $this->flag         = $flag;
         $this->defaultValue = $defaultValue;
-        $this->options = $options;
-        $this->value = $value;
+        $this->options      = $options;
+        $this->value        = $value;
     }
-
 
     /**
      * @param $key
      * @param $value
+     *
      * @return $this
      */
     public function addOption($key, $value)
@@ -135,6 +130,7 @@ abstract class PdfField
 
     /**
      * @param array $options
+     *
      * @return $this
      */
     public function setOptions($options)
@@ -154,6 +150,7 @@ abstract class PdfField
 
     /**
      * @param string $description
+     *
      * @return $this
      */
     public function setDescription($description)
@@ -171,9 +168,9 @@ abstract class PdfField
         return $this->description;
     }
 
-
     /**
      * @param string $justification
+     *
      * @return $this
      */
     public function setJustification($justification)
@@ -193,6 +190,7 @@ abstract class PdfField
 
     /**
      * @param string $name
+     *
      * @return $this
      */
     public function setName($name)
@@ -212,6 +210,7 @@ abstract class PdfField
 
     /**
      * @param string $value
+     *
      * @return $this
      */
     public function setValue($value)
@@ -237,8 +236,6 @@ abstract class PdfField
         return $this->flag;
     }
 
-
-
     /**
      * @param int $flag
      *
@@ -253,6 +250,7 @@ abstract class PdfField
 
     /**
      * @param string $defaultValue
+     *
      * @return $this
      */
     public function setDefaultValue($defaultValue)
@@ -269,7 +267,6 @@ abstract class PdfField
     {
         return $this->defaultValue;
     }
-
 
     /**
      * @TODO: figure out how this flag works
@@ -313,6 +310,7 @@ abstract class PdfField
     public function setQuestion($question)
     {
         $this->question = $question;
+
         return $this;
     }
 
@@ -327,44 +325,112 @@ abstract class PdfField
     /*
      * Button Field Convenience Tests
      */
-    public function isPushButton()      { return false; }
-    public function isRadioButton()     { return false; }
-    public function isCheckBox()        { return false; }
-    public function isNoToggleOff()     { return false; }
+    public function isPushButton()
+    {
+        return false;
+    }
+
+    public function isRadioButton()
+    {
+        return false;
+    }
+
+    public function isCheckBox()
+    {
+        return false;
+    }
+
+    public function isNoToggleOff()
+    {
+        return false;
+    }
 
     /**
-     * Text Field Convenience Tests
+     * Text Field Convenience Tests.
      */
-    public function isMultiLine()       { return false; }
-    public function isPassword()        { return false; }
-    public function isFileInput()       { return false; }
-    public function isNoScroll()        { return false; }
-    public function isRichText()        { return false; }
-    public function isCombFormatting()  { return false; }
+    public function isMultiLine()
+    {
+        return false;
+    }
+
+    public function isPassword()
+    {
+        return false;
+    }
+
+    public function isFileInput()
+    {
+        return false;
+    }
+
+    public function isNoScroll()
+    {
+        return false;
+    }
+
+    public function isRichText()
+    {
+        return false;
+    }
+
+    public function isCombFormatting()
+    {
+        return false;
+    }
 
     /*
      * Choice Fields Convenience Methods
      */
-    public function isMultiSelect()     { return false; }
-    public function isComboBox()        { return false; }
-    public function isListBox()         { return false; }
-    public function isEditableList()    { return false; }
-    public function isSortedList()      { return false; }
-    public function isCommitOnChange()  { return false; }
+    public function isMultiSelect()
+    {
+        return false;
+    }
+
+    public function isComboBox()
+    {
+        return false;
+    }
+
+    public function isListBox()
+    {
+        return false;
+    }
+
+    public function isEditableList()
+    {
+        return false;
+    }
+
+    public function isSortedList()
+    {
+        return false;
+    }
+
+    public function isCommitOnChange()
+    {
+        return false;
+    }
 
     /*
      * Both Text and Button Fields
      */
-    public function isInUnison()        { return false; }
+    public function isInUnison()
+    {
+        return false;
+    }
 
     /*
      * Both Text and Choice Fields
      */
 
-    public function isNoSpellCheck()    { return false; }
+    public function isNoSpellCheck()
+    {
+        return false;
+    }
 
     /**
      * @param int $position
+     *
      * @return bool
      */
     public function checkBitValue($position)
@@ -375,16 +441,15 @@ abstract class PdfField
     /**
      * @return string
      */
-    public abstract function getEscapedValue();
+    abstract public function getEscapedValue();
 
     /**
      * @return string
      */
-    public abstract function getExampleValue();
+    abstract public function getExampleValue();
 
     /**
      * @return string
      */
-    public abstract function getType();
-
+    abstract public function getType();
 }

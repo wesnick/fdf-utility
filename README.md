@@ -38,11 +38,10 @@ Use composer.
 
 ## Requirements
 
-PHP 5.3
+PHP 5.6
 
-shuble/slurpy - pdftk wrapper library
-
-Symfony Console
+Symfony Process
+Symfony Console (dev)
 
 ## Acknowledgements
 

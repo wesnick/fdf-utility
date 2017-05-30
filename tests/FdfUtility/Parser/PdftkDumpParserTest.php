@@ -1,13 +1,13 @@
 <?php
-/**
- * @file PdftkDumpParserTest.php
- */
 
-namespace Wesnick\FdfUtility\Parser;
-
+namespace Wesnick\Tests\FdfUtility\Parser;
 
 use Wesnick\FdfUtility\Fields\PdfField;
+use Wesnick\FdfUtility\Parser\PdftkDumpParser;
 
+/**
+ * @author Wesley O. Nichols <spanishwes@gmail.com>
+ */
 class PdftkDumpParserTest extends \PHPUnit_Framework_TestCase
 {
 
@@ -23,7 +23,7 @@ class PdftkDumpParserTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $fixture = __DIR__ . '/../../../fixtures/pdftk_field_output.txt';
+        $fixture = __DIR__ . '/../../fixtures/pdftk_field_output.txt';
         $this->object = new PdftkDumpParser($fixture);
         $this->fields = $this->object->parse();
     }

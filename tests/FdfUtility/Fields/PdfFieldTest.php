@@ -1,13 +1,13 @@
 <?php
-/**
- * @file PdfFieldTest.php
- */
 
-namespace Wesnick\FdfUtility\Fields;
+namespace Wesnick\Tests\FdfUtility\Fields;
 
-
+use Wesnick\FdfUtility\Fields\PdfField;
 use Wesnick\FdfUtility\Parser\PdftkDumpParser;
 
+/**
+ * @author Wesley O. Nichols <spanishwes@gmail.com>
+ */
 class PdfFieldTest extends \PHPUnit_Framework_TestCase
 {
 
@@ -45,9 +45,9 @@ class PdfFieldTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->stub = $this->getMockForAbstractClass(__NAMESPACE__ . '\\PdfField', array('stub', 0));
+        $this->stub = $this->getMockForAbstractClass(PdfField::class, array('stub', 0));
 
-        $fixture = __DIR__ . '/../../../fixtures/pdftk_field_output.txt';
+        $fixture = __DIR__ . '/../../fixtures/pdftk_field_output.txt';
         $parser = new PdftkDumpParser($fixture);
         $this->fields = $parser->parse();
     }

@@ -1,22 +1,17 @@
 <?php
-/**
- * @file
- * ButtonField.php
- */
 
 namespace Wesnick\FdfUtility\Fields;
 
-
 use Wesnick\FdfUtility\FdfWriter;
 
-
+/**
+ * @author Wesley O. Nichols <spanishwes@gmail.com>
+ */
 class ButtonField extends PdfField
 {
-
-
     public function getEscapedValue()
     {
-        return '(' . FdfWriter::escapePdfName($this->value) . ')';
+        return '('.FdfWriter::escapePdfName($this->value).')';
     }
 
     /**
@@ -24,13 +19,13 @@ class ButtonField extends PdfField
      */
     public function getExampleValue()
     {
-
         // Pushbuttons have no value
         if ($this->isPushButton()) {
             return null;
         }
 
         $keys = array_keys($this->options);
+
         return $this->options[$keys[mt_rand(0, (count($keys) - 1))]];
     }
 
@@ -43,6 +38,7 @@ class ButtonField extends PdfField
     {
         return $this->checkBitValue(PdfField::PUSH_BUTTON);
     }
+
     public function isRadioButton()
     {
         return $this->checkBitValue(PdfField::RADIO_BUTTON);
@@ -50,7 +46,7 @@ class ButtonField extends PdfField
 
     public function isCheckBox()
     {
-        return ! $this->checkBitValue(PdfField::PUSH_BUTTON) && ! $this->checkBitValue(PdfField::RADIO_BUTTON);
+        return !$this->checkBitValue(PdfField::PUSH_BUTTON) && !$this->checkBitValue(PdfField::RADIO_BUTTON);
     }
 
     public function isInUnison()

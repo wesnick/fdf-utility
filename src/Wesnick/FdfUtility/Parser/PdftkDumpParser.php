@@ -1,26 +1,21 @@
 <?php
-/**
- * @file
- * DataDumpParser.php
- */
 
 namespace Wesnick\FdfUtility\Parser;
-
 
 use Wesnick\FdfUtility\Fields\ButtonField;
 use Wesnick\FdfUtility\Fields\ChoiceField;
 use Wesnick\FdfUtility\Fields\TextField;
 
 /**
- * Class DataDumpParser
+ * Class DataDumpParser.
  *
  * Parses output from pdftk dump_data_fields
  */
 class PdftkDumpParser
 {
-
     /**
      * Current index in the contents array.
+     *
      * @var int
      */
     private $currentIndex;
@@ -32,32 +27,28 @@ class PdftkDumpParser
      */
     private $currentContents;
 
-
     /**
      * @var \Wesnick\FdfUtility\Fields\PdfField[]
      */
-    private $fields;
+    private $fields = [];
 
-
-    function __construct($file)
+    public function __construct($file)
     {
         $this->currentContents = file($file);
-        $this->currentIndex = 0;
+        $this->currentIndex    = 0;
     }
 
-
     /**
-     * Parse PDFTK Form Field Dump
+     * Parse PDFTK Form Field Dump.
      *
      * @return \Wesnick\FdfUtility\Fields\PdfField[]
      */
     public function parse()
     {
-
         while ($this->nextBlockIndex()) {
             $currentIndex = $this->currentIndex;
-            $nextIndex = $this->getNextBlockIndex();
-            $fieldValues = $this->processFieldBlock($currentIndex, $nextIndex);
+            $nextIndex    = $this->getNextBlockIndex();
+            $fieldValues  = $this->processFieldBlock($currentIndex, $nextIndex);
             if ($field = $this->createFieldFromPdftkDump($fieldValues)) {
                 $this->fields[] = $field;
             }
@@ -66,31 +57,29 @@ class PdftkDumpParser
         return $this->fields;
     }
 
-
     /**
      * Process a Field Element.
      *
      * @param int $start
      * @param int $stop
+     *
      * @return array
      */
     private function processFieldBlock($start, $stop)
     {
-        $itemValues = array();
+        $itemValues = [];
 
-        for ($x = $start; $x < $stop; $x++) {
-
-            if (false === strpos($this->currentContents[$x], ":")) {
+        for ($x = $start; $x < $stop; ++$x) {
+            if (false === strpos($this->currentContents[$x], ':')) {
                 continue;
             }
 
-            list($index, $value) = array_map('trim', explode(":", $this->currentContents[$x]));
+            list($index, $value) = array_map('trim', explode(':', $this->currentContents[$x]));
 
             // Options are an array
             if ('FieldStateOption' === $index) {
                 $itemValues[$index][] = $value;
-            }
-            else {
+            } else {
                 $itemValues[$index] = $value;
             }
         }
@@ -106,7 +95,7 @@ class PdftkDumpParser
     private function nextBlockIndex()
     {
         while ($this->currentIndex < count($this->currentContents) - 1) {
-            if (substr($this->currentContents[$this->currentIndex++], 0, 3) === "---") {
+            if (substr($this->currentContents[$this->currentIndex++], 0, 3) === '---') {
                 return true;
             }
         }
@@ -115,7 +104,7 @@ class PdftkDumpParser
     }
 
     /**
-     * Find the next block index
+     * Find the next block index.
      *
      * @return int
      */
@@ -124,7 +113,7 @@ class PdftkDumpParser
         $index = $this->currentIndex;
 
         while ($index < count($this->currentContents) - 1) {
-            if ("---" === substr($this->currentContents[++$index], 0, 3)) {
+            if ('---' === substr($this->currentContents[++$index], 0, 3)) {
                 return $index--;
             }
         }
@@ -132,21 +121,21 @@ class PdftkDumpParser
         return count($this->currentContents);
     }
 
-
     /**
      * @param $dump
-     * @return \Wesnick\FdfUtility\Fields\PdfField
+     *
      * @throws \Exception
+     *
+     * @return \Wesnick\FdfUtility\Fields\PdfField
      */
     private function createFieldFromPdftkDump($dump)
     {
-
-        $name = $dump['FieldName'];
-        $flag = $dump['FieldFlags'];
-        $value = isset($dump['FieldValue']) ? $dump['FieldValue'] : null;
+        $name         = $dump['FieldName'];
+        $flag         = $dump['FieldFlags'];
+        $value        = isset($dump['FieldValue']) ? $dump['FieldValue'] : null;
         $defaultValue = isset($dump['FieldValueDefault']) ? $dump['FieldValueDefault'] : null;
 
-        $options = array();
+        $options = [];
         if (!empty($dump['FieldStateOption'])) {
             foreach ($dump['FieldStateOption'] as $opt) {
                 $options[$opt] = $opt;
@@ -170,7 +159,6 @@ class PdftkDumpParser
         if (isset($dump['FieldJustification'])) {
             $field->setJustification($dump['FieldJustification']);
         }
-
 
         if (isset($dump['FieldMaxLength'])) {
             $field->setMaxLength($dump['FieldMaxLength']);

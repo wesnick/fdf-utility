@@ -1,30 +1,28 @@
 <?php
-/**
- * @file
- * ChoiceField.php
- */
 
 namespace Wesnick\FdfUtility\Fields;
 
-
 use Wesnick\FdfUtility\FdfWriter;
 
+/**
+ * @author Wesley O. Nichols <spanishwes@gmail.com>
+ */
 class ChoiceField extends PdfField
 {
-
     public function getEscapedValue()
     {
-        $value = is_null($this->value) ? $this->defaultValue : $this->value;
+        $value = null === $this->value ? $this->defaultValue : $this->value;
 
         if ($this->isMultiSelect() && is_array($value)) {
             $out = '';
             foreach ($value as $val) {
-                $out .= '(' . FdfWriter::escapePdfName($val) . ')';
+                $out .= '('.FdfWriter::escapePdfName($val).')';
             }
-            return '[ ' . $out . ' ]';
-        } else {
-            return '(' . FdfWriter::escapePdfName($value) . ')';
+
+            return '[ '.$out.' ]';
         }
+
+        return '('.FdfWriter::escapePdfName($value).')';
     }
 
     /**
@@ -41,6 +39,7 @@ class ChoiceField extends PdfField
         }
 
         $keys = array_keys($this->options);
+
         return $this->options[$keys[mt_rand(0, (count($keys) - 1))]];
     }
 
@@ -56,7 +55,7 @@ class ChoiceField extends PdfField
 
     public function isListBox()
     {
-        return ! $this->checkBitValue(PdfField::COMBO_BOX);
+        return !$this->checkBitValue(PdfField::COMBO_BOX);
     }
 
     public function isEditableList()

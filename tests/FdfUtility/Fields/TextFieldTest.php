@@ -1,11 +1,13 @@
 <?php
+
+namespace Wesnick\Tests\FdfUtility\Fields;
+
+use Wesnick\FdfUtility\Fields\PdfField;
+use Wesnick\FdfUtility\Fields\TextField;
+
 /**
- * @file TextFieldTest.php
+ * @author Wesley O. Nichols <spanishwes@gmail.com>
  */
-
-namespace Wesnick\FdfUtility\Fields;
-
-
 class TextFieldTest extends PdfFieldTest
 {
 
