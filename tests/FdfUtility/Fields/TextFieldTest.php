@@ -7,38 +7,39 @@ use Wesnick\FdfUtility\Fields\TextField;
 
 /**
  * @author Wesley O. Nichols <spanishwes@gmail.com>
+ * @covers \Wesnick\FdfUtility\Fields\TextField
  */
 class TextFieldTest extends PdfFieldTest
 {
-
-
     public function textFieldFlagsProvider()
     {
-        return array(
-            array(0, array()),
-            array(2, array(PdfField::REQUIRED)),
-            array(7, array(PdfField::MULTI_LINE)),
-            array(8, array(PdfField::READ_ONLY)),
-            array(9, array(PdfField::PASSWORD, PdfField::REQUIRED, PdfField::NO_SPELL_CHECK, PdfField::NO_SCROLL)),
-            array(10, array(PdfField::FILE_INPUT, PdfField::NO_SPELL_CHECK)),
-            array(11, array(PdfField::NO_SPELL_CHECK, PdfField::NO_SCROLL)),
-            array(12, array(PdfField::NO_SPELL_CHECK, PdfField::NO_SCROLL)),
-            array(13, array(PdfField::MULTI_LINE, PdfField::NO_SPELL_CHECK, PdfField::NO_SCROLL)),
-            array(14, array(PdfField::NO_SPELL_CHECK)),
-            array(15, array(PdfField::NO_SPELL_CHECK, PdfField::NO_SCROLL)),
-            array(16, array(PdfField::NO_SPELL_CHECK, PdfField::NO_SCROLL, PdfField::IN_UNISON)),
-            array(17, array(PdfField::NO_SCROLL)),
-            array(18, array(PdfField::NO_SPELL_CHECK, PdfField::NO_SCROLL, PdfField::COMB_FORMATTING))
-
-        );
+        return [
+            [0, []],
+            [2, [PdfField::REQUIRED]],
+            [7, [PdfField::MULTI_LINE]],
+            [8, [PdfField::READ_ONLY]],
+            [9, [PdfField::PASSWORD, PdfField::REQUIRED, PdfField::NO_SPELL_CHECK, PdfField::NO_SCROLL]],
+            [10, [PdfField::FILE_INPUT, PdfField::NO_SPELL_CHECK]],
+            [11, [PdfField::NO_SPELL_CHECK, PdfField::NO_SCROLL]],
+            [12, [PdfField::NO_SPELL_CHECK, PdfField::NO_SCROLL]],
+            [13, [PdfField::MULTI_LINE, PdfField::NO_SPELL_CHECK, PdfField::NO_SCROLL]],
+            [14, [PdfField::NO_SPELL_CHECK]],
+            [15, [PdfField::NO_SPELL_CHECK, PdfField::NO_SCROLL]],
+            [16, [PdfField::NO_SPELL_CHECK, PdfField::NO_SCROLL, PdfField::IN_UNISON]],
+            [17, [PdfField::NO_SCROLL]],
+            [18, [PdfField::NO_SPELL_CHECK, PdfField::NO_SCROLL, PdfField::COMB_FORMATTING]],
+        ];
     }
 
     /**
      * @dataProvider textFieldFlagsProvider
+     *
+     * @param int   $index
+     * @param array $flags
      */
-    public function testTextFlags($index, $flags)
+    public function testTextFlags($index, array $flags)
     {
-        $field = $this->fields[$index];
+        $field   = $this->fields[$index];
         $flagSum = 0;
         foreach ($flags as $flag) {
             $flagSum |= $flag;
@@ -46,7 +47,7 @@ class TextFieldTest extends PdfFieldTest
         }
 
         $out = $field->checkBitValue($flagSum);
-        $sum = array();
+        $sum = [];
         foreach (PdfField::$flags as $f => $d) {
             if ($out = $field->checkBitValue($f)) {
                 $sum[$f] = $d;
@@ -56,36 +57,33 @@ class TextFieldTest extends PdfFieldTest
 
     /**
      * @dataProvider textFieldFlagsProvider
+     *
+     * @param int   $index
+     * @param array $flags
      */
-    public function testTextConvenienceMethods($index, $flags)
+    public function testTextConvenienceMethods($index, array $flags)
     {
-        $field = $this->fields[$index];
+        $field   = $this->fields[$index];
         $methods = PdfFieldTest::$conveninceMethods;
         foreach ($methods as $flag => $method) {
-            if (in_array($flag, $flags)) {
-                $this->assertTrue(call_user_func(array($field, $method)), sprintf("Field Name %s, Index %d, %s is True", $field->getName(), $index, PdfField::$flags[$flag]));
+            if (in_array($flag, $flags, true)) {
+                $this->assertTrue(call_user_func([$field, $method]), sprintf('Field Name %s, Index %d, %s is True', $field->getName(), $index, PdfField::$flags[$flag]));
+            } else {
+                $this->assertFalse(call_user_func([$field, $method]), sprintf('Field Name %s, Index %d, %s is False', $field->getName(), $index, PdfField::$flags[$flag]));
             }
-            else {
-                $this->assertFalse(call_user_func(array($field, $method)), sprintf("Field Name %s, Index %d, %s is False", $field->getName(), $index, PdfField::$flags[$flag]));
-            }
-
         }
     }
 
-
     public function testDefaultValueIsRespected()
     {
+        $field = new TextField('default_value', 0, 'default', [], null);
 
-        $field = new TextField('default_value', 0, 'default', array(), null);
-
-        $this->assertEquals('(default)', $field->getEscapedValue(), "Default Value is respected on null value");
+        $this->assertSame('(default)', $field->getEscapedValue(), 'Default Value is respected on null value');
 
         $field->setValue('value');
-        $this->assertEquals('(value)', $field->getEscapedValue(), "Default Value is ignored if value not null");
+        $this->assertSame('(value)', $field->getEscapedValue(), 'Default Value is ignored if value not null');
 
         $field->setValue('');
-        $this->assertEquals('(\)', $field->getEscapedValue(), "Default Value is ignored if value is empty");
-
+        $this->assertSame('(\)', $field->getEscapedValue(), 'Default Value is ignored if value is empty');
     }
-
 }

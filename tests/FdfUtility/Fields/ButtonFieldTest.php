@@ -6,27 +6,30 @@ use Wesnick\FdfUtility\Fields\PdfField;
 
 /**
  * @author Wesley O. Nichols <spanishwes@gmail.com>
+ * @covers \Wesnick\FdfUtility\Fields\ButtonField
  */
 class ButtonFieldTest extends PdfFieldTest
 {
-
     public function buttonFieldFlagsProvider()
     {
-        return array(
-            array(3, array()),
-            array(4, array(PdfField::NO_TOGGLE_OFF, PdfField::RADIO_BUTTON)),
-            array(6, array(PdfField::PUSH_BUTTON)),
-            array(24, array()),
-            array(25, array(PdfField::NO_TOGGLE_OFF, PdfField::RADIO_BUTTON, PdfField::IN_UNISON)),
-        );
+        return [
+            [3, []],
+            [4, [PdfField::NO_TOGGLE_OFF, PdfField::RADIO_BUTTON]],
+            [6, [PdfField::PUSH_BUTTON]],
+            [24, []],
+            [25, [PdfField::NO_TOGGLE_OFF, PdfField::RADIO_BUTTON, PdfField::IN_UNISON]],
+        ];
     }
 
     /**
      * @dataProvider buttonFieldFlagsProvider
+     *
+     * @param int   $index
+     * @param array $flags
      */
-    public function testButtonFlags($index, $flags)
+    public function testButtonFlags($index, array $flags)
     {
-        $field = $this->fields[$index];
+        $field   = $this->fields[$index];
         $flagSum = 0;
         foreach ($flags as $flag) {
             $flagSum |= $flag;
@@ -34,25 +37,24 @@ class ButtonFieldTest extends PdfFieldTest
         }
 
         $out = $field->checkBitValue($flagSum);
-
-
     }
 
     /**
      * @dataProvider buttonFieldFlagsProvider
+     *
+     * @param int   $index
+     * @param array $flags
      */
-    public function testButtonConvenienceMethods($index, $flags)
+    public function testButtonConvenienceMethods($index, array $flags)
     {
-        $field = $this->fields[$index];
+        $field   = $this->fields[$index];
         $methods = PdfFieldTest::$conveninceMethods;
         foreach ($methods as $flag => $method) {
-            if (in_array($flag, $flags)) {
-                $this->assertTrue(call_user_func(array($field, $method)), sprintf("Field Name %s, Index %d, %s is True", $field->getName(), $index, PdfField::$flags[$flag]));
+            if (in_array($flag, $flags, true)) {
+                $this->assertTrue(call_user_func([$field, $method]), sprintf('Field Name %s, Index %d, %s is True', $field->getName(), $index, PdfField::$flags[$flag]));
+            } else {
+                $this->assertFalse(call_user_func([$field, $method]), sprintf('Field Name %s, Index %d, %s is False', $field->getName(), $index, PdfField::$flags[$flag]));
             }
-            else {
-                $this->assertFalse(call_user_func(array($field, $method)), sprintf("Field Name %s, Index %d, %s is False", $field->getName(), $index, PdfField::$flags[$flag]));
-            }
-
         }
     }
 }

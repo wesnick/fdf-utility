@@ -30,11 +30,6 @@ return PhpCsFixer\Config::create()
     ->setFinder(
         PhpCsFixer\Finder::create()
             ->exclude('vendor')
-            ->exclude('var')
-            ->exclude('web')
-            ->notPath('app/AppKernel.php')
-            ->notPath('app/AppKernel.php')
-            ->notPath('app/autoload.php')
             ->in(__DIR__)
     )
 ;

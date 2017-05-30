@@ -7,21 +7,16 @@ use Wesnick\FdfUtility\Parser\PdftkDumpParser;
 
 /**
  * @author Wesley O. Nichols <spanishwes@gmail.com>
+ * @covers \Wesnick\FdfUtility\Fields\PdfField
  */
 class PdfFieldTest extends \PHPUnit_Framework_TestCase
 {
-
-    /**
-     * @var PdfField
-     */
-    private $stub;
-
     /**
      * @var PdfField[]
      */
     protected $fields;
-    
-    protected static $conveninceMethods = array(
+
+    protected static $conveninceMethods = [
         PdfField::READ_ONLY         => 'isReadOnly',
         PdfField::REQUIRED          => 'isRequired',
         PdfField::NO_EXPORT         => 'isNoExport',
@@ -41,40 +36,40 @@ class PdfFieldTest extends \PHPUnit_Framework_TestCase
         PdfField::RICH_TEXT         => 'isRichText',
         PdfField::IN_UNISON         => 'isInUnison',
         PdfField::COMMIT_ON_CHANGE  => 'isCommitonChange',
-    );
+    ];
+
+    /**
+     * @var PdfField
+     */
+    private $stub;
 
     public function setUp()
     {
-        $this->stub = $this->getMockForAbstractClass(PdfField::class, array('stub', 0));
+        $this->stub = $this->getMockForAbstractClass(PdfField::class, ['stub', 0]);
 
-        $fixture = __DIR__ . '/../../fixtures/pdftk_field_output.txt';
-        $parser = new PdftkDumpParser($fixture);
+        $fixture      = __DIR__.'/../../fixtures/pdftk_field_output.txt';
+        $parser       = new PdftkDumpParser($fixture);
         $this->fields = $parser->parse();
     }
 
     public function tearDown()
     {
-        $this->stub = null;
+        $this->stub   = null;
         $this->fields = null;
     }
 
     public function testMethodChaining()
     {
         $this->stub
-            ->setDefaultValue("default_value")
+            ->setDefaultValue('default_value')
             ->setFlag(0)
-            ->setValue("value")
-            ->setDescription("description")
-            ->setJustification("Left")
+            ->setValue('value')
+            ->setDescription('description')
+            ->setJustification('Left')
         ;
 
-        $this->assertEquals("default_value", $this->stub->getDefaultValue());
-        $this->assertEquals("Left", $this->stub->getJustification());
-        $this->assertEquals("description", $this->stub->getDescription());
-
-
+        $this->assertSame('default_value', $this->stub->getDefaultValue());
+        $this->assertSame('Left', $this->stub->getJustification());
+        $this->assertSame('description', $this->stub->getDescription());
     }
-
-
-
 }

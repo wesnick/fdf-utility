@@ -7,7 +7,7 @@ use Wesnick\FdfUtility\Fields\TextField;
 
 /**
  * @author Wesley O. Nichols <spanishwes@gmail.com>
- * @coversNothing
+ * @covers \Wesnick\FdfUtility\FdfWriter
  */
 class FdfWriterTest extends \PHPUnit_Framework_TestCase
 {
@@ -24,8 +24,8 @@ class FdfWriterTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider PdfStrings
      *
-     * @param mixed $input
-     * @param mixed $escaped
+     * @param string $input
+     * @param string $escaped
      */
     public function testEscapePdfString($input, $escaped)
     {
@@ -45,8 +45,8 @@ class FdfWriterTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider PdfNames
      *
-     * @param mixed $input
-     * @param mixed $escaped
+     * @param string $input
+     * @param string $escaped
      */
     public function testEscapePdfNames($input, $escaped)
     {
