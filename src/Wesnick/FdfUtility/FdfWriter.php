@@ -62,8 +62,28 @@ class FdfWriter
     public static function escapePdfString($string)
     {
         $escaped = '';
-
-        foreach (str_split($string) as $char) {
+        
+        $uniord = function ($u) {
+            $k = mb_convert_encoding($u, 'UCS-2LE', 'UTF-8');
+            $k1 = ord(substr($k, 0, 1));
+            $k2 = ord(substr($k, 1, 1));
+            return $k2 * 256 + $k1;
+        };
+        
+        $str_split_unicode = function ($str, $l = 0) {
+            if ($l > 0) {
+                $ret = array();
+                $len = mb_strlen($str, "UTF-8");
+                for ($i = 0; $i < $len; $i += $l) {
+                    $ret[] = mb_substr($str, $i, $l, "UTF-8");
+                }
+                return $ret;
+            }
+            return preg_split("//u", $str, -1, PREG_SPLIT_NO_EMPTY);
+        };
+        
+        $chars = $str_split_unicode($string);
+        foreach ($chars as $char) {
             switch ($ordinal = ord($char)) {
                 // If open paren, close paren, or backslash, escape character
                 case in_array($ordinal, [0x28, 0x29, 0x5c], true):
@@ -72,7 +92,7 @@ class FdfWriter
                     break;
                 case $ordinal < 32:
                 case $ordinal > 126:
-                    $escaped .= sprintf('\\%03o', $ordinal);
+                    $escaped .= sprintf('\\%03o', $uniord($char));
                     break;
                 default:
                     $escaped .= $char;
