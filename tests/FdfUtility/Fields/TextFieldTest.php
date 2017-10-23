@@ -84,6 +84,6 @@ class TextFieldTest extends PdfFieldTest
         $this->assertSame('(value)', $field->getEscapedValue(), 'Default Value is ignored if value not null');
 
         $field->setValue('');
-        $this->assertSame('(\)', $field->getEscapedValue(), 'Default Value is ignored if value is empty');
+        $this->assertSame('()', $field->getEscapedValue(), 'Default Value is ignored if value is empty');
     }
 }
