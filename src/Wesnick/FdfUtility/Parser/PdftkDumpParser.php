@@ -164,6 +164,10 @@ class PdftkDumpParser
             $field->setMaxLength($dump['FieldMaxLength']);
         }
 
+        if (isset($dump['FieldNameAlt'])) {
+            $field->setDescription($dump['FieldNameAlt']);
+        }
+
         return $field;
     }
 }
