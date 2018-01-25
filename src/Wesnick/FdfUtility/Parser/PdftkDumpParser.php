@@ -74,7 +74,7 @@ class PdftkDumpParser
                 continue;
             }
 
-            list($index, $value) = array_map('trim', explode(':', $this->currentContents[$x]));
+            list($index, $value) = array_map('trim', explode(':', $this->currentContents[$x], 2));
 
             // Options are an array
             if ('FieldStateOption' === $index) {
