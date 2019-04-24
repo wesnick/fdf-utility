@@ -15,9 +15,13 @@ class FdfWriterTest extends \PHPUnit_Framework_TestCase
     {
         return [
             ['abcdef~', 'abcdef~'], // printable characters
-            ['\()', '\\\\\(\)'],  // escaped characters \,(,)
+            ['John Smith', 'John Smith'], // printable characters
+            ['806 – 4815 Eldoràdo Mews', '806 – 4815 Eldoràdo Mews'], // printable characters
+            ['çÇÀàÈèùÉéâÂÊêÎîÔôÛûëïöüÿæ', 'çÇÀàÈèùÉéâÂÊêÎîÔôÛûëïöüÿæ'], // printable characters
+            ['4045 €', '4045 €'], // printable characters
+            ['\()', '\\\\⠀尩'],  // escaped characters \,(,)
             ['xx xx', 'xx xx'],  // space print normally
-            ['xx'.chr(10).'xx', 'xx\012xx'],  // non-printable characters
+            ['xx'.chr(10).'xx', 'xx'.chr(10).'xx'],  // non-printable characters
         ];
     }
 
@@ -29,16 +33,16 @@ class FdfWriterTest extends \PHPUnit_Framework_TestCase
      */
     public function testEscapePdfString($input, $escaped)
     {
-        $this->assertSame($escaped, FdfWriter::escapePdfString($input));
+        $this->assertSame(iconv('UTF-8', 'UTF-16BE', $escaped), FdfWriter::escapePdfString($input));
     }
 
     public function pdfNames()
     {
         return [
             ['abcdef~', 'abcdef~'], // printable characters
-            ['\()', '\()'],  //  \,(,) are not escaped
-            ['xx xx', 'xx\040xx'],  // space print normally
-            ['xx'.chr(10).'xx', 'xx\012xx'],  // non-printable characters
+            ['\()', '\\\\⠀尩'],  //  \,(,) are not escaped
+            ['xx xx', 'xx xx'],  // space print normally
+            ['xx'.chr(10).'xx', 'xx'.chr(10).'xx'],  // non-printable characters
         ];
     }
 
@@ -50,7 +54,7 @@ class FdfWriterTest extends \PHPUnit_Framework_TestCase
      */
     public function testEscapePdfNames($input, $escaped)
     {
-        $this->assertSame($escaped, FdfWriter::escapePdfName($input));
+        $this->assertSame(iconv('UTF-8', 'UTF-16BE', $escaped), FdfWriter::escapePdfString($input));
     }
 
     public function testAddFields()
