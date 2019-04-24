@@ -55,12 +55,17 @@ class FdfWriter
     }
 
     /**
+     * Encoding solution ported from php-pdftk.
+     *
+     * @see https://github.com/mikehaertl/php-pdftk/blob/master/src/FdfFile.php#L60
+     *
      * @param $string
      *
      * @return string
      */
     public static function escapePdfString($string)
     {
+        // Create UTF-16BE string encode as ASCII hex
         $utf16Value = mb_convert_encoding($string,'UTF-16BE', 'UTF-8');
         $utf16Value = strtr($utf16Value, array('(' => '\\(', ')'=>'\\)'));
         return $utf16Value;
