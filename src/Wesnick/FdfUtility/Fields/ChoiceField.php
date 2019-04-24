@@ -22,7 +22,7 @@ class ChoiceField extends PdfField
             return '[ '.$out.' ]';
         }
 
-        return '('.FdfWriter::escapePdfString($value).')';
+        return sprintf('(%s%s%s)', chr(0xFE), chr(0xFF), FdfWriter::escapePdfString($value));
     }
 
     /**

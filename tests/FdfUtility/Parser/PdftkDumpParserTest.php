@@ -89,10 +89,10 @@ class PdftkDumpParserTest extends \PHPUnit_Framework_TestCase
         return [
             [8, '⣾＀爀攀愀搀开漀渀氀礩'], // (read_only)
             [12, '⣾＀搀攀昀愀甀氀琀开瘀愀氀甀攩'], // (default_value)
-            [24, '⠀夀攀猩'], // (Yes)
-            [25, '⠀夀攀猩'], // (Yes)
-            [26, '⠀吀漀洩'], // (Tom)
-            [27, '⠀䴀愀爀挀漩'], // (Marco)
+            [24, '⣾＀夀攀猩'], // (Yes)
+            [25, '⣾＀夀攀猩'], // (Yes)
+            [26, '⣾＀吀漀洩'], // (Tom)
+            [27, '⣾＀䴀愀爀挀漩'], // (Marco)
         ];
     }
 
