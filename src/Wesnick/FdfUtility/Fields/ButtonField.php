@@ -11,7 +11,7 @@ class ButtonField extends PdfField
 {
     public function getEscapedValue()
     {
-        return '('.FdfWriter::escapePdfName($this->value).')';
+        return '('.FdfWriter::escapePdfString($this->value).')';
     }
 
     /**
