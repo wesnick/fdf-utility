@@ -55,89 +55,20 @@ class FdfWriter
     }
 
     /**
-     * @param string $u
+     * Encoding solution ported from php-pdftk.
      *
-     * @return int
-     */
-    public static function uniord($u)
-    {
-        $k = mb_convert_encoding($u, 'UCS-2LE', 'UTF-8');
-        $k1 = ord(substr($k, 0, 1));
-        $k2 = ord(substr($k, 1, 1));
-        return $k2 * 256 + $k1;
-    }
-
-    /**
-     * @param string $str
-     * @param int    $l
+     * @see https://github.com/mikehaertl/php-pdftk/blob/master/src/FdfFile.php#L60
      *
-     * @return array
-     */
-    public static function str_split_unicode($str, $l = 0)
-    {
-        if ($l > 0) {
-            $ret = [];
-            $len = mb_strlen($str, 'UTF-8');
-            for ($i = 0; $i < $len; $i += $l) {
-                $ret[] = mb_substr($str, $i, $l, 'UTF-8');
-            }
-            return $ret;
-        }
-        return preg_split("//u", $str, -1, PREG_SPLIT_NO_EMPTY);
-    }
-
-    /**
      * @param $string
      *
      * @return string
      */
     public static function escapePdfString($string)
     {
-        $escaped = '';
-
-        $chars = self::str_split_unicode($string);
-        foreach ($chars as $char) {
-            switch ($ordinal = ord($char)) {
-                // If open paren, close paren, or backslash, escape character
-                case in_array($ordinal, [0x28, 0x29, 0x5c], true):
-                    // backslash == chr(0x5c)
-                    $escaped .= chr(0x5c).$char;
-                    break;
-                case $ordinal < 32:
-                case $ordinal > 126:
-                    $escaped .= sprintf('\\%03o', self::uniord($char));
-                    break;
-                default:
-                    $escaped .= $char;
-            }
-        }
-
-        return $escaped;
-    }
-
-    /**
-     * @param $string
-     *
-     * @return string
-     */
-    public static function escapePdfName($string)
-    {
-        $escaped = '';
-
-        foreach (str_split($string) as $char) {
-            switch ($ordinal = ord($char)) {
-                // If ascii not between 33 and 126, or a hash mark, use a hex code
-                case $ordinal < 33:
-                case $ordinal > 126:
-                case $ordinal === 23:
-                    $escaped .= sprintf('\\%03o', $ordinal);
-                    break;
-                default:
-                    $escaped .= $char;
-            }
-        }
-
-        return $escaped;
+        // Create UTF-16BE string encode as ASCII hex
+        $utf16Value = mb_convert_encoding($string,'UTF-16BE', 'UTF-8');
+        $utf16Value = strtr($utf16Value, array('(' => '\\(', ')'=>'\\)'));
+        return $utf16Value;
     }
 
     public function generate()
@@ -185,7 +116,7 @@ class FdfWriter
 
     private function appendKey($key)
     {
-        $this->buffer .= sprintf('<< /T (%s)', $this->escapePdfString($key));
+        $this->buffer .= sprintf('<< /T (%s%s%s)', chr(0xFE), chr(0xFF), self::escapePdfString($key));
     }
 
     private function openKids()
@@ -201,7 +132,7 @@ class FdfWriter
     private function appendValue(PdfField $field)
     {
         $valueFormat = $field->isRichText() ? 'RV' : 'V';
-        $this->buffer .= sprintf('/%s %s %s >>', $valueFormat, $field->getEscapedValue($this), $this->getFieldFlags($field))."\n";
+        $this->buffer .= sprintf('/%s %s %s >>', $valueFormat, $field->getEscapedValue(), $this->getFieldFlags($field))."\n";
     }
 
     private function getFieldFlags(PdfField $field)

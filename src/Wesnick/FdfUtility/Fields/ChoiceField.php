@@ -16,13 +16,13 @@ class ChoiceField extends PdfField
         if ($this->isMultiSelect() && is_array($value)) {
             $out = '';
             foreach ($value as $val) {
-                $out .= '('.FdfWriter::escapePdfName($val).')';
+                $out .= '('.FdfWriter::escapePdfString($val).')';
             }
 
             return '[ '.$out.' ]';
         }
 
-        return '('.FdfWriter::escapePdfName($value).')';
+        return sprintf('(%s%s%s)', chr(0xFE), chr(0xFF), FdfWriter::escapePdfString($value));
     }
 
     /**

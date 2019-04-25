@@ -65,12 +65,12 @@ class ChoiceFieldTest extends PdfFieldTest
     {
         $field = new ChoiceField('default_value', 0, 'default', ['default' => 'default', 'default1' => 'default1'], null);
 
-        $this->assertSame('(default)', $field->getEscapedValue(), 'Default Value is respected on null value');
+        $this->assertSame(iconv('UTF-8', 'UTF-16BE', '⣾＀搀攀昀愀甀氀琩'), $field->getEscapedValue(), 'Default Value is respected on null value');
 
         $field->setValue('default1');
-        $this->assertSame('(default1)', $field->getEscapedValue(), 'Default Value is ignored if value not null');
+        $this->assertSame(iconv('UTF-8', 'UTF-16BE', '⣾＀搀攀昀愀甀氀琀ㄩ'), $field->getEscapedValue(), 'Default Value is ignored if value not null');
 
         $field->setValue('');
-        $this->assertSame('(\000)', $field->getEscapedValue(), 'Default Value is ignored if value is empty');
+        $this->assertSame(iconv('UTF-8', 'UTF-16BE', '⣾Ｉ'), $field->getEscapedValue(), 'Default Value is ignored if value is empty');
     }
 }

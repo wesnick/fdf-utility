@@ -2,6 +2,7 @@
 
 namespace Wesnick\Tests\FdfUtility\Parser;
 
+use Wesnick\FdfUtility\FdfWriter;
 use Wesnick\FdfUtility\Fields\PdfField;
 use Wesnick\FdfUtility\Parser\PdftkDumpParser;
 
@@ -86,12 +87,12 @@ class PdftkDumpParserTest extends \PHPUnit_Framework_TestCase
     public function valueProvider()
     {
         return [
-            [8, '(read_only)'],
-            [12, '(default_value)'],
-            [24, '(Yes)'],
-            [25, '(Yes)'],
-            [26, '(Tom)'],
-            [27, '(Marco)'],
+            [8, '⣾＀爀攀愀搀开漀渀氀礩'], // (read_only)
+            [12, '⣾＀搀攀昀愀甀氀琀开瘀愀氀甀攩'], // (default_value)
+            [24, '⣾＀夀攀猩'], // (Yes)
+            [25, '⣾＀夀攀猩'], // (Yes)
+            [26, '⣾＀吀漀洩'], // (Tom)
+            [27, '⣾＀䴀愀爀挀漩'], // (Marco)
         ];
     }
 
@@ -103,7 +104,7 @@ class PdftkDumpParserTest extends \PHPUnit_Framework_TestCase
      */
     public function testParseGetsValue($index, $value)
     {
-        $this->assertSame($value, $this->fields[$index]->getEscapedValue());
+        $this->assertSame(iconv('UTF-8', 'UTF-16BE', $value), $this->fields[$index]->getEscapedValue());
     }
 
     public function defaultValueProvider()

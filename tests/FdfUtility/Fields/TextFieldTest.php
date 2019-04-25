@@ -78,12 +78,12 @@ class TextFieldTest extends PdfFieldTest
     {
         $field = new TextField('default_value', 0, 'default', [], null);
 
-        $this->assertSame('(default)', $field->getEscapedValue(), 'Default Value is respected on null value');
+        $this->assertSame(iconv('UTF-8', 'UTF-16BE', '⣾＀搀攀昀愀甀氀琩'), $field->getEscapedValue(), 'Default Value is respected on null value');
 
         $field->setValue('value');
-        $this->assertSame('(value)', $field->getEscapedValue(), 'Default Value is ignored if value not null');
+        $this->assertSame(iconv('UTF-8', 'UTF-16BE', '⣾＀瘀愀氀甀攩'), $field->getEscapedValue(), 'Default Value is ignored if value not null');
 
         $field->setValue('');
-        $this->assertSame('()', $field->getEscapedValue(), 'Default Value is ignored if value is empty');
+        $this->assertSame(iconv('UTF-8', 'UTF-16BE', '⣾Ｉ'), $field->getEscapedValue(), 'Default Value is ignored if value is empty');
     }
 }

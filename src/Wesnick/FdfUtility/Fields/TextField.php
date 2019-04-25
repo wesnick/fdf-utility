@@ -34,7 +34,7 @@ class TextField extends PdfField
     {
         $value = null === $this->value ? $this->defaultValue : $this->value;
 
-        return '('.FdfWriter::escapePdfString($value).')';
+        return sprintf('(%s%s%s)', chr(0xFE), chr(0xFF), FdfWriter::escapePdfString($value));
     }
 
     /**
