@@ -2,7 +2,7 @@
 
 namespace Wesnick\FdfUtility;
 
-use Symfony\Component\Process\ProcessBuilder;
+use Symfony\Component\Process\Process;
 use Wesnick\FdfUtility\Parser\PdftkDumpParser;
 
 /**
@@ -20,9 +20,8 @@ class PdfForm
     {
         $fields_dump = tempnam(sys_get_temp_dir(), 'fdf_dump');
 
-        $processBuilder = self::buildPdftkProcess($pdftkBinary);
-        $processBuilder->setArguments([$pdf, 'dump_data_fields_utf8', 'output', $fields_dump]);
-        $processBuilder->getProcess()->mustRun();
+        $process = new Process([$pdftkBinary, $pdf, 'dump_data_fields_utf8', 'output', $fields_dump]);
+        $process->mustRun();
 
         $parser = new PdftkDumpParser($fields_dump);
         $fields = $parser->parse();
@@ -49,9 +48,8 @@ class PdfForm
         $writer->generate();
         $writer->save($fdf_file);
 
-        $processBuilder = self::buildPdftkProcess($pdftkBinary);
-        $processBuilder->setArguments([$sourcePdf, 'fill_form', $fdf_file, 'output', $targetPdf]);
-        $processBuilder->getProcess()->mustRun();
+        $process = new Process([$pdftkBinary, $sourcePdf, 'fill_form', $fdf_file, 'output', $targetPdf]);
+        $process->mustRun();
 
         unlink($fdf_file);
     }
@@ -117,18 +115,5 @@ class PdfForm
             fputcsv($handle, $row);
         }
         fclose($handle);
-    }
-
-    /**
-     * @param string $pdftkBinary
-     *
-     * @return ProcessBuilder
-     */
-    private static function buildPdftkProcess($pdftkBinary)
-    {
-        $processBuilder = new ProcessBuilder();
-        $processBuilder->setPrefix($pdftkBinary);
-
-        return $processBuilder;
     }
 }
