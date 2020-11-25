@@ -66,8 +66,8 @@ class FdfWriter
     public static function escapePdfString($string)
     {
         // Create UTF-16BE string encode as ASCII hex
-        $utf16Value = mb_convert_encoding($string,'UTF-16BE', 'UTF-8');
-        $utf16Value = strtr($utf16Value, array('(' => '\\(', ')'=>'\\)'));
+        $utf16Value = mb_convert_encoding($string, 'UTF-16BE', 'UTF-8');
+        $utf16Value = strtr($utf16Value, array('(' => '\(', ')' => '\)', '\\' => '\\\\'));
         return $utf16Value;
     }
 
