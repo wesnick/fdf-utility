@@ -47,5 +47,7 @@ class GenerateExamplePdfCommand extends Command
 
         $pdfForm = new PdfForm();
         $pdfForm->generatePdfExample($pdftk_path, $source, $target);
+
+        return 0;
     }
 }

@@ -13,12 +13,12 @@ Left to finish
 ## Usage
 
 Console Usage -
--Generate CSV Export from PDF
+- Generate CSV Export from PDF
 ```
 $ /path/to/fdf-utility/bin/fdf wesnick:fdf:csv-export /path/to/my/pdf.pdf path/to/my/csv/csv --pdftk=/path/to/pdftk
 ```
 
--Generate Example Filled PDF
+- Generate Example Filled PDF
 ```
 $ /path/to/fdf-utility/bin/fdf wesnick:fdf:example-pdf /path/to/my/emtpy-pdf.pdf path/to/my/filled-pdf.pdf --pdftk=/path/to/pdftk
 ```
@@ -30,18 +30,17 @@ You can also use the lirbary's components directly.  The class PdfForm is a usef
 
 Use composer.
 
-    {
-        "require": {
-            "wesnick/fdf-utility": "dev-master@dev"
-        }
-    }
+```
+composer require wesnick/fdf-utility
+```
 
 ## Requirements
 
-PHP 5.6
+- PHP 5.5.9 / PHP 7.0 or higher
+- Symfony Process (>=3.3 or >=4.0)
+- Symfony Console (dev, >=3.3 or >=4.0)
 
-Symfony Process
-Symfony Console (dev)
+For Symfony versions between >=2.3 and <3.3 use the [release v0.4.3](https://github.com/wesnick/fdf-utility/releases/tag/v0.4.3)
 
 ## Acknowledgements
 

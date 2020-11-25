@@ -47,5 +47,7 @@ class GenerateCsvExportCommand extends Command
 
         $pdfForm = new PdfForm();
         $pdfForm->generateCsvExport($pdftk_path, $source, $target);
+
+        return 0;
     }
 }
