@@ -2,6 +2,7 @@
 
 namespace Wesnick\Tests\FdfUtility;
 
+use PHPUnit\Framework\TestCase;
 use Wesnick\FdfUtility\FdfWriter;
 use Wesnick\FdfUtility\Fields\TextField;
 
@@ -9,7 +10,7 @@ use Wesnick\FdfUtility\Fields\TextField;
  * @author Wesley O. Nichols <spanishwes@gmail.com>
  * @covers \Wesnick\FdfUtility\FdfWriter
  */
-class FdfWriterTest extends \PHPUnit_Framework_TestCase
+class FdfWriterTest extends TestCase
 {
     public function pdfStrings()
     {
@@ -73,6 +74,11 @@ class FdfWriterTest extends \PHPUnit_Framework_TestCase
         ];
 
         $writer = new FdfWriter([$f1, $f2]);
-        $this->assertAttributeSame($expected, 'fields', $writer);
+
+        $refClass = new \ReflectionObject($writer);
+        $refProperty = $refClass->getProperty('fields');
+        $refProperty->setAccessible(true);
+
+        $this->assertSame($expected, $refProperty->getValue($writer));
     }
 }

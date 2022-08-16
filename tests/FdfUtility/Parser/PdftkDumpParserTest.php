@@ -2,7 +2,7 @@
 
 namespace Wesnick\Tests\FdfUtility\Parser;
 
-use Wesnick\FdfUtility\FdfWriter;
+use PHPUnit\Framework\TestCase;
 use Wesnick\FdfUtility\Fields\PdfField;
 use Wesnick\FdfUtility\Parser\PdftkDumpParser;
 
@@ -10,7 +10,7 @@ use Wesnick\FdfUtility\Parser\PdftkDumpParser;
  * @author Wesley O. Nichols <spanishwes@gmail.com>
  * @covers \Wesnick\FdfUtility\Parser\PdftkDumpParser
  */
-class PdftkDumpParserTest extends \PHPUnit_Framework_TestCase
+class PdftkDumpParserTest extends TestCase
 {
     /**
      * @var PdftkDumpParser
@@ -22,14 +22,14 @@ class PdftkDumpParserTest extends \PHPUnit_Framework_TestCase
      */
     private $fields;
 
-    public function setUp()
+    public function setUp(): void
     {
         $fixture      = __DIR__.'/../../fixtures/pdftk_field_output.txt';
         $this->object = new PdftkDumpParser($fixture);
         $this->fields = $this->object->parse();
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         $this->object = null;
     }
@@ -204,6 +204,7 @@ class PdftkDumpParserTest extends \PHPUnit_Framework_TestCase
      */
     public function testParseGetsFlags($index, $flag)
     {
-        $this->assertAttributeSame($flag, 'flag', $this->fields[$index]);
+        $this->assertInstanceOf(PdfField::class, $this->fields[$index]);
+        $this->assertSame($flag, $this->fields[$index]->getFlag());
     }
 }
