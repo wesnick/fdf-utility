@@ -2,6 +2,7 @@
 
 namespace Wesnick\Tests\FdfUtility\Fields;
 
+use PHPUnit\Framework\TestCase;
 use Wesnick\FdfUtility\Fields\PdfField;
 use Wesnick\FdfUtility\Parser\PdftkDumpParser;
 
@@ -9,7 +10,7 @@ use Wesnick\FdfUtility\Parser\PdftkDumpParser;
  * @author Wesley O. Nichols <spanishwes@gmail.com>
  * @covers \Wesnick\FdfUtility\Fields\PdfField
  */
-class PdfFieldTest extends \PHPUnit_Framework_TestCase
+abstract class PdfFieldTest extends TestCase
 {
     /**
      * @var PdfField[]
@@ -43,7 +44,7 @@ class PdfFieldTest extends \PHPUnit_Framework_TestCase
      */
     private $stub;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->stub = $this->getMockForAbstractClass(PdfField::class, ['stub', 0]);
 
@@ -52,7 +53,7 @@ class PdfFieldTest extends \PHPUnit_Framework_TestCase
         $this->fields = $parser->parse();
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         $this->stub   = null;
         $this->fields = null;

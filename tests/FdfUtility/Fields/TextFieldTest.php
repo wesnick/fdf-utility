@@ -14,20 +14,20 @@ class TextFieldTest extends PdfFieldTest
     public function textFieldFlagsProvider()
     {
         return [
-            [0, []],
-            [2, [PdfField::REQUIRED]],
-            [7, [PdfField::MULTI_LINE]],
-            [8, [PdfField::READ_ONLY]],
-            [9, [PdfField::PASSWORD, PdfField::REQUIRED, PdfField::NO_SPELL_CHECK, PdfField::NO_SCROLL]],
-            [10, [PdfField::FILE_INPUT, PdfField::NO_SPELL_CHECK]],
-            [11, [PdfField::NO_SPELL_CHECK, PdfField::NO_SCROLL]],
-            [12, [PdfField::NO_SPELL_CHECK, PdfField::NO_SCROLL]],
-            [13, [PdfField::MULTI_LINE, PdfField::NO_SPELL_CHECK, PdfField::NO_SCROLL]],
-            [14, [PdfField::NO_SPELL_CHECK]],
-            [15, [PdfField::NO_SPELL_CHECK, PdfField::NO_SCROLL]],
-            [16, [PdfField::NO_SPELL_CHECK, PdfField::NO_SCROLL, PdfField::IN_UNISON]],
-            [17, [PdfField::NO_SCROLL]],
-            [18, [PdfField::NO_SPELL_CHECK, PdfField::NO_SCROLL, PdfField::COMB_FORMATTING]],
+            [0, [], false],
+            [2, [PdfField::REQUIRED], true],
+            [7, [PdfField::MULTI_LINE], true],
+            [8, [PdfField::READ_ONLY], true],
+            [9, [PdfField::PASSWORD, PdfField::REQUIRED, PdfField::NO_SPELL_CHECK, PdfField::NO_SCROLL], true],
+            [10, [PdfField::FILE_INPUT, PdfField::NO_SPELL_CHECK], true],
+            [11, [PdfField::NO_SPELL_CHECK, PdfField::NO_SCROLL], true],
+            [12, [PdfField::NO_SPELL_CHECK, PdfField::NO_SCROLL], true],
+            [13, [PdfField::MULTI_LINE, PdfField::NO_SPELL_CHECK, PdfField::NO_SCROLL], true],
+            [14, [PdfField::NO_SPELL_CHECK], true],
+            [15, [PdfField::NO_SPELL_CHECK, PdfField::NO_SCROLL], true],
+            [16, [PdfField::NO_SPELL_CHECK, PdfField::NO_SCROLL, PdfField::IN_UNISON], true],
+            [17, [PdfField::NO_SCROLL], true],
+            [18, [PdfField::NO_SPELL_CHECK, PdfField::NO_SCROLL, PdfField::COMB_FORMATTING], true],
         ];
     }
 
@@ -36,8 +36,9 @@ class TextFieldTest extends PdfFieldTest
      *
      * @param int   $index
      * @param array $flags
+     * @param bool  $expected
      */
-    public function testTextFlags($index, array $flags)
+    public function testTextFlags($index, array $flags, bool $expected)
     {
         $field   = $this->fields[$index];
         $flagSum = 0;
@@ -49,10 +50,13 @@ class TextFieldTest extends PdfFieldTest
         $out = $field->checkBitValue($flagSum);
         $sum = [];
         foreach (PdfField::$flags as $f => $d) {
-            if ($out = $field->checkBitValue($f)) {
+            if ($field->checkBitValue($f)) {
                 $sum[$f] = $d;
             }
         }
+
+        $this->assertCount(count($flags), $sum);
+        $this->assertSame($expected, $out);
     }
 
     /**

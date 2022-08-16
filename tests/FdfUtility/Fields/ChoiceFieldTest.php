@@ -14,15 +14,15 @@ class ChoiceFieldTest extends PdfFieldTest
     public function choiceFieldFlagsProvider()
     {
         return [
-            [1, [PdfField::COMBO_BOX]],
-            [5, []],
-            [19, [PdfField::COMBO_BOX, PdfField::EDITABLE_LIST, PdfField::NO_SPELL_CHECK]],
-            [20, [PdfField::COMBO_BOX, PdfField::SORTED_LIST, PdfField::NO_SPELL_CHECK]],
-            [21, [PdfField::REQUIRED, PdfField::COMBO_BOX, PdfField::NO_SPELL_CHECK, PdfField::COMMIT_ON_CHANGE]],
-            [22, [PdfField::SORTED_LIST]],
-            [23, [PdfField::MULTI_SELECT]],
-            [26, []],
-            [27, [PdfField::COMBO_BOX, PdfField::EDITABLE_LIST, PdfField::NO_SPELL_CHECK]],
+            [1, [PdfField::COMBO_BOX], true],
+            [5, [], false],
+            [19, [PdfField::COMBO_BOX, PdfField::EDITABLE_LIST, PdfField::NO_SPELL_CHECK], true],
+            [20, [PdfField::COMBO_BOX, PdfField::SORTED_LIST, PdfField::NO_SPELL_CHECK], true],
+            [21, [PdfField::REQUIRED, PdfField::COMBO_BOX, PdfField::NO_SPELL_CHECK, PdfField::COMMIT_ON_CHANGE], true],
+            [22, [PdfField::SORTED_LIST], true],
+            [23, [PdfField::MULTI_SELECT], true],
+            [26, [], false],
+            [27, [PdfField::COMBO_BOX, PdfField::EDITABLE_LIST, PdfField::NO_SPELL_CHECK], true],
         ];
     }
 
@@ -31,8 +31,9 @@ class ChoiceFieldTest extends PdfFieldTest
      *
      * @param int   $index
      * @param array $flags
+     * @param bool  $expected
      */
-    public function testChoiceFlags($index, array $flags)
+    public function testChoiceFlags($index, array $flags, bool $expected)
     {
         $field   = $this->fields[$index];
         $flagSum = 0;
@@ -40,6 +41,9 @@ class ChoiceFieldTest extends PdfFieldTest
             $flagSum |= $flag;
             $this->assertTrue($field->checkBitValue($flag));
         }
+
+        $out = $field->checkBitValue($flagSum);
+        $this->assertSame($expected, $out);
     }
 
     /**

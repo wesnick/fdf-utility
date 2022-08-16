@@ -13,11 +13,11 @@ class ButtonFieldTest extends PdfFieldTest
     public function buttonFieldFlagsProvider()
     {
         return [
-            [3, []],
-            [4, [PdfField::NO_TOGGLE_OFF, PdfField::RADIO_BUTTON]],
-            [6, [PdfField::PUSH_BUTTON]],
-            [24, []],
-            [25, [PdfField::NO_TOGGLE_OFF, PdfField::RADIO_BUTTON, PdfField::IN_UNISON]],
+            [3, [], false],
+            [4, [PdfField::NO_TOGGLE_OFF, PdfField::RADIO_BUTTON], true],
+            [6, [PdfField::PUSH_BUTTON], true],
+            [24, [], false],
+            [25, [PdfField::NO_TOGGLE_OFF, PdfField::RADIO_BUTTON, PdfField::IN_UNISON], true],
         ];
     }
 
@@ -26,8 +26,9 @@ class ButtonFieldTest extends PdfFieldTest
      *
      * @param int   $index
      * @param array $flags
+     * @param bool  $expected
      */
-    public function testButtonFlags($index, array $flags)
+    public function testButtonFlags($index, array $flags, bool $expected)
     {
         $field   = $this->fields[$index];
         $flagSum = 0;
@@ -37,6 +38,7 @@ class ButtonFieldTest extends PdfFieldTest
         }
 
         $out = $field->checkBitValue($flagSum);
+        $this->assertSame($expected, $out);
     }
 
     /**
