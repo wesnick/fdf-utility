@@ -1,7 +1,7 @@
 FDF Utility Library for PHP
 ===========================
 
-[![Build Status](https://travis-ci.org/wesnick/fdf-utility.png)](https://travis-ci.org/wesnick/fdf-utility)
+![ci status](https://github.com/wesnick/fdf-utility/actions/workflows/ci.yaml/badge.svg)
 
 This library produces FDF files for PDF Forms.
 
@@ -36,10 +36,12 @@ composer require wesnick/fdf-utility
 
 ## Requirements
 
-- PHP 5.5.9 / PHP 7.0 or higher
-- Symfony Process (>=3.3 or >=4.0)
-- Symfony Console (dev, >=3.3 or >=4.0)
+- PHP 7.1 or higher
+- Symfony Process (>=4.4 or >=5.4)
+- Symfony Console (dev, >=4.4 or >=5.4)
 
+For PHP versions lower than 7.1 use the [release v0.5.0](https://github.com/wesnick/fdf-utility/releases/tag/v0.5.0)****
+For Symfony versions between >=3.3 and <4.4 use the [release v0.5.0](https://github.com/wesnick/fdf-utility/releases/tag/v0.5.0)****
 For Symfony versions between >=2.3 and <3.3 use the [release v0.4.3](https://github.com/wesnick/fdf-utility/releases/tag/v0.4.3)
 
 ## Acknowledgements
