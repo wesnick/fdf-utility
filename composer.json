@@ -11,12 +11,12 @@
         }
     ],
     "require": {
-        "php": ">=7.1",
-        "symfony/process": "^4.4 | ^5.4"
+        "php": "^8.1",
+        "symfony/process": "^6.4 | 7.2.*"
     },
     "require-dev": {
-        "symfony/console": "^4.4 | ^5.4",
-        "phpunit/phpunit": "^7.5 | ^8.5 | ^9.5",
+        "symfony/console": "^6.4 | 7.2.*",
+        "phpunit/phpunit": "^10.0",
         "ext-iconv": "*"
     },
     "autoload": {
