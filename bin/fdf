@@ -7,8 +7,8 @@ use Symfony\Component\Console\Application;
 
 $application = new Application();
 $application->addCommands(array(
-    new \Wesnick\FdfUtility\Command\GenerateExamplePdfCommand(),
-    new \Wesnick\FdfUtility\Command\GenerateCsvExportCommand(),
+    new \src\Command\GenerateExamplePdfCommand(),
+    new \src\Command\GenerateCsvExportCommand(),
 ));
 
 $application->run();

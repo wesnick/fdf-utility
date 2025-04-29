@@ -20,8 +20,8 @@
         "ext-iconv": "*"
     },
     "autoload": {
-        "psr-0": {
-            "Wesnick": "src/"
+        "psr-4": {
+            "Wesnick\\FdfUtility": "src/"
         }
     },
     "autoload-dev": {

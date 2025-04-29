@@ -28,7 +28,7 @@ class PdftkDumpParser
     private $currentContents;
 
     /**
-     * @var \Wesnick\FdfUtility\Fields\PdfField[]
+     * @var \src\Fields\PdfField[]
      */
     private $fields = [];
 
@@ -41,7 +41,7 @@ class PdftkDumpParser
     /**
      * Parse PDFTK Form Field Dump.
      *
-     * @return \Wesnick\FdfUtility\Fields\PdfField[]
+     * @return \src\Fields\PdfField[]
      */
     public function parse()
     {
@@ -74,7 +74,7 @@ class PdftkDumpParser
                 continue;
             }
 
-            list($index, $value) = array_map('trim', explode(':', $this->currentContents[$x], 2));
+            [$index, $value] = array_map('trim', explode(':', $this->currentContents[$x], 2));
 
             // Options are an array
             if ('FieldStateOption' === $index) {
@@ -124,9 +124,9 @@ class PdftkDumpParser
     /**
      * @param $dump
      *
-     * @throws \Exception
+     * @return \src\Fields\PdfField
+     *@throws \Exception
      *
-     * @return \Wesnick\FdfUtility\Fields\PdfField
      */
     private function createFieldFromPdftkDump($dump)
     {
