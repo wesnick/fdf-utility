@@ -1,38 +1,35 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Wesnick\FdfUtility\Parser;
 
 use Wesnick\FdfUtility\Fields\ButtonField;
 use Wesnick\FdfUtility\Fields\ChoiceField;
+use Wesnick\FdfUtility\Fields\PdfField;
 use Wesnick\FdfUtility\Fields\TextField;
 
 /**
- * Class DataDumpParser.
- *
  * Parses output from pdftk dump_data_fields
  */
 class PdftkDumpParser
 {
     /**
      * Current index in the contents array.
-     *
-     * @var int
      */
-    private $currentIndex;
+    private int $currentIndex;
 
     /**
      * Array of file lines in the PDFTK Dump File.
      *
-     * @var array
+     * @var array<string>
      */
-    private $currentContents;
+    private array $currentContents;
 
     /**
-     * @var \src\Fields\PdfField[]
+     * @var array<PdfField>
      */
-    private $fields = [];
+    private array $fields = [];
 
-    public function __construct($file)
+    public function __construct(string $file)
     {
         $this->currentContents = file($file);
         $this->currentIndex    = 0;
@@ -41,9 +38,9 @@ class PdftkDumpParser
     /**
      * Parse PDFTK Form Field Dump.
      *
-     * @return \src\Fields\PdfField[]
+     * @return array<PdfField>
      */
-    public function parse()
+    public function parse(): array
     {
         while ($this->nextBlockIndex()) {
             $currentIndex = $this->currentIndex;
@@ -59,18 +56,13 @@ class PdftkDumpParser
 
     /**
      * Process a Field Element.
-     *
-     * @param int $start
-     * @param int $stop
-     *
-     * @return array
      */
-    private function processFieldBlock($start, $stop)
+    private function processFieldBlock(int $start, int $stop): array
     {
         $itemValues = [];
 
         for ($x = $start; $x < $stop; ++$x) {
-            if (false === strpos($this->currentContents[$x], ':')) {
+            if (!str_contains($this->currentContents[$x], ':')) {
                 continue;
             }
 
@@ -89,13 +81,11 @@ class PdftkDumpParser
 
     /**
      * Advance the index pointer to the next block.
-     *
-     * @return bool
      */
-    private function nextBlockIndex()
+    private function nextBlockIndex(): bool
     {
         while ($this->currentIndex < count($this->currentContents) - 1) {
-            if (substr($this->currentContents[$this->currentIndex++], 0, 3) === '---') {
+            if (str_starts_with($this->currentContents[$this->currentIndex++], '---')) {
                 return true;
             }
         }
@@ -105,15 +95,13 @@ class PdftkDumpParser
 
     /**
      * Find the next block index.
-     *
-     * @return int
      */
-    private function getNextBlockIndex()
+    private function getNextBlockIndex(): int
     {
         $index = $this->currentIndex;
 
         while ($index < count($this->currentContents) - 1) {
-            if ('---' === substr($this->currentContents[++$index], 0, 3)) {
+            if (str_starts_with($this->currentContents[++$index], '---')) {
                 return $index--;
             }
         }
@@ -121,52 +109,40 @@ class PdftkDumpParser
         return count($this->currentContents);
     }
 
-    /**
-     * @param $dump
-     *
-     * @return \src\Fields\PdfField
-     *@throws \Exception
-     *
-     */
-    private function createFieldFromPdftkDump($dump)
+    private function createFieldFromPdftkDump(array $dump): ?PdfField
     {
         $name         = $dump['FieldName'];
-        $flag         = $dump['FieldFlags'];
-        $value        = isset($dump['FieldValue']) ? $dump['FieldValue'] : null;
-        $defaultValue = isset($dump['FieldValueDefault']) ? $dump['FieldValueDefault'] : null;
+        $flag         = (int) $dump['FieldFlags'];
+        $defaultValue = $dump['FieldValueDefault'] ?? null;
 
-        $options = [];
-        if (!empty($dump['FieldStateOption'])) {
-            foreach ($dump['FieldStateOption'] as $opt) {
-                $options[$opt] = $opt;
+        $options      = [];
+        $stateOptions = $dump['FieldStateOption'] ?? [];
+        if (!empty($stateOptions)) {
+            foreach ($stateOptions as $option) {
+                $options[$option] = $option;
             }
         }
 
+        $justification = $dump['FieldJustification'] ?? 'Left';
+        $description   = $dump['FieldNameAlt'] ?? '';
+
         switch ($dump['FieldType']) {
             case 'Button':
-                $field = new ButtonField($name, $flag, $defaultValue, $options, $value);
+                $field = new ButtonField($name, $flag, $defaultValue, $options, $description, $justification);
                 break;
             case 'Choice':
-                $field = new ChoiceField($name, $flag, $defaultValue, $options, $value);
+                $field = new ChoiceField($name, $flag, $defaultValue, $options, $description, $justification);
                 break;
             case 'Text':
-                $field = new TextField($name, $flag, $defaultValue, $options, $value);
+                $field = new TextField($name, $flag, $defaultValue, $options, $description, $justification);
+                // Update max length property.
+                $field->maxLength = isset($dump['FieldMaxLength']) ? (int) $dump['FieldMaxLength'] : null;
                 break;
             default:
                 return null;
         }
 
-        if (isset($dump['FieldJustification'])) {
-            $field->setJustification($dump['FieldJustification']);
-        }
-
-        if (isset($dump['FieldMaxLength'])) {
-            $field->setMaxLength($dump['FieldMaxLength']);
-        }
-
-        if (isset($dump['FieldNameAlt'])) {
-            $field->setDescription($dump['FieldNameAlt']);
-        }
+        $field->value = $dump['FieldValue'] ?? null;
 
         return $field;
     }

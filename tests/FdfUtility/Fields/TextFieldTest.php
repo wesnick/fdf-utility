@@ -1,50 +1,30 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Wesnick\Tests\FdfUtility\Fields;
 
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Wesnick\FdfUtility\Fields\PdfField;
 use Wesnick\FdfUtility\Fields\TextField;
 
 /**
  * @author Wesley O. Nichols <spanishwes@gmail.com>
- * @covers \Wesnick\FdfUtility\Fields\TextField
  */
-class TextFieldTest extends PdfFieldTest
+#[
+    CoversClass(TextField::class)
+]
+final class TextFieldTest extends PdfFieldTestCase
 {
-    public function textFieldFlagsProvider()
-    {
-        return [
-            [0, [], false],
-            [2, [PdfField::REQUIRED], true],
-            [7, [PdfField::MULTI_LINE], true],
-            [8, [PdfField::READ_ONLY], true],
-            [9, [PdfField::PASSWORD, PdfField::REQUIRED, PdfField::NO_SPELL_CHECK, PdfField::NO_SCROLL], true],
-            [10, [PdfField::FILE_INPUT, PdfField::NO_SPELL_CHECK], true],
-            [11, [PdfField::NO_SPELL_CHECK, PdfField::NO_SCROLL], true],
-            [12, [PdfField::NO_SPELL_CHECK, PdfField::NO_SCROLL], true],
-            [13, [PdfField::MULTI_LINE, PdfField::NO_SPELL_CHECK, PdfField::NO_SCROLL], true],
-            [14, [PdfField::NO_SPELL_CHECK], true],
-            [15, [PdfField::NO_SPELL_CHECK, PdfField::NO_SCROLL], true],
-            [16, [PdfField::NO_SPELL_CHECK, PdfField::NO_SCROLL, PdfField::IN_UNISON], true],
-            [17, [PdfField::NO_SCROLL], true],
-            [18, [PdfField::NO_SPELL_CHECK, PdfField::NO_SCROLL, PdfField::COMB_FORMATTING], true],
-        ];
-    }
-
-    /**
-     * @dataProvider textFieldFlagsProvider
-     *
-     * @param int   $index
-     * @param array $flags
-     * @param bool  $expected
-     */
-    public function testTextFlags($index, array $flags, bool $expected)
+    #[
+        DataProvider('textFieldFlagsProvider')
+    ]
+    public function testTextFlags(int $index, array $flags, bool $expected): void
     {
         $field   = $this->fields[$index];
         $flagSum = 0;
         foreach ($flags as $flag) {
             $flagSum |= $flag;
-            $this->assertTrue($field->checkBitValue($flag));
+            self::assertTrue($field->checkBitValue($flag));
         }
 
         $out = $field->checkBitValue($flagSum);
@@ -55,39 +35,72 @@ class TextFieldTest extends PdfFieldTest
             }
         }
 
-        $this->assertCount(count($flags), $sum);
-        $this->assertSame($expected, $out);
+        self::assertCount(count($flags), $sum);
+        self::assertSame($expected, $out);
     }
 
-    /**
-     * @dataProvider textFieldFlagsProvider
-     *
-     * @param int   $index
-     * @param array $flags
-     */
-    public function testTextConvenienceMethods($index, array $flags)
+    #[
+        DataProvider('textFieldFlagsProvider')
+    ]
+    public function testTextConvenienceMethods(int $index, array $flags): void
     {
         $field   = $this->fields[$index];
-        $methods = PdfFieldTest::$conveninceMethods;
+        $methods = PdfFieldTestCase::$convenienceMethods;
         foreach ($methods as $flag => $method) {
             if (in_array($flag, $flags, true)) {
-                $this->assertTrue(call_user_func([$field, $method]), sprintf('Field Name %s, Index %d, %s is True', $field->getName(), $index, PdfField::$flags[$flag]));
+                self::assertTrue(
+                    $field->$method(),
+                    sprintf('Field Name %s, Index %d, %s is True', $field->name, $index, PdfField::$flags[$flag])
+                );
             } else {
-                $this->assertFalse(call_user_func([$field, $method]), sprintf('Field Name %s, Index %d, %s is False', $field->getName(), $index, PdfField::$flags[$flag]));
+                self::assertFalse(
+                    $field->$method(),
+                    sprintf('Field Name %s, Index %d, %s is False', $field->name, $index, PdfField::$flags[$flag])
+                );
             }
         }
     }
 
-    public function testDefaultValueIsRespected()
+    public function testDefaultValueIsRespected(): void
     {
         $field = new TextField('default_value', 0, 'default', [], null);
 
-        $this->assertSame(iconv('UTF-8', 'UTF-16BE', '⣾＀搀攀昀愀甀氀琩'), $field->getEscapedValue(), 'Default Value is respected on null value');
+        self::assertSame(
+            iconv('UTF-8', 'UTF-16BE', '⣾＀搀攀昀愀甀氀琩'),
+            $field->getEscapedValue(),
+            'Default Value is respected on null value'
+        );
 
-        $field->setValue('value');
-        $this->assertSame(iconv('UTF-8', 'UTF-16BE', '⣾＀瘀愀氀甀攩'), $field->getEscapedValue(), 'Default Value is ignored if value not null');
+        $field->value = 'value';
+        self::assertSame(
+            iconv('UTF-8', 'UTF-16BE', '⣾＀瘀愀氀甀攩'),
+            $field->getEscapedValue(),
+            'Default Value is ignored if value not null'
+        );
 
-        $field->setValue('');
-        $this->assertSame(iconv('UTF-8', 'UTF-16BE', '⣾Ｉ'), $field->getEscapedValue(), 'Default Value is ignored if value is empty');
+        $field->value = '';
+        self::assertSame(
+            iconv('UTF-8', 'UTF-16BE', '⣾Ｉ'),
+            $field->getEscapedValue(),
+            'Default Value is ignored if value is empty'
+        );
+    }
+
+    public static function textFieldFlagsProvider(): \Generator
+    {
+        yield [0, [], false];
+        yield [2, [PdfField::REQUIRED], true];
+        yield [7, [PdfField::MULTI_LINE], true];
+        yield [8, [PdfField::READ_ONLY], true];
+        yield [9, [PdfField::PASSWORD, PdfField::REQUIRED, PdfField::NO_SPELL_CHECK, PdfField::NO_SCROLL], true];
+        yield [10, [PdfField::FILE_INPUT, PdfField::NO_SPELL_CHECK], true];
+        yield [11, [PdfField::NO_SPELL_CHECK, PdfField::NO_SCROLL], true];
+        yield [12, [PdfField::NO_SPELL_CHECK, PdfField::NO_SCROLL], true];
+        yield [13, [PdfField::MULTI_LINE, PdfField::NO_SPELL_CHECK, PdfField::NO_SCROLL], true];
+        yield [14, [PdfField::NO_SPELL_CHECK], true];
+        yield [15, [PdfField::NO_SPELL_CHECK, PdfField::NO_SCROLL], true];
+        yield [16, [PdfField::NO_SPELL_CHECK, PdfField::NO_SCROLL, PdfField::IN_UNISON], true];
+        yield [17, [PdfField::NO_SCROLL], true];
+        yield [18, [PdfField::NO_SPELL_CHECK, PdfField::NO_SCROLL, PdfField::COMB_FORMATTING], true];
     }
 }

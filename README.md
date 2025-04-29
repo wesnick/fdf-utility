@@ -36,11 +36,12 @@ composer require wesnick/fdf-utility
 
 ## Requirements
 
-- PHP 7.1 or higher
-- Symfony Process (>=4.4 or >=5.4)
-- Symfony Console (dev, >=4.4 or >=5.4)
+- PHP 8.1 or higher
+- Symfony Process (^6.4 or 7.2.*)
+- Symfony Console (dev, ^6.4 or 7.2.*)
 
 For PHP versions lower than 7.1 use the [release v0.5.0](https://github.com/wesnick/fdf-utility/releases/tag/v0.5.0)  
+For PHP versions lower than 8.1 use the [release v0.6.0](https://github.com/wesnick/fdf-utility/releases/tag/v0.6.0)
 For Symfony versions between >=3.3 and <4.4 use the [release v0.5.0](https://github.com/wesnick/fdf-utility/releases/tag/v0.5.0)  
 For Symfony versions between >=2.3 and <3.3 use the [release v0.4.3](https://github.com/wesnick/fdf-utility/releases/tag/v0.4.3)
 

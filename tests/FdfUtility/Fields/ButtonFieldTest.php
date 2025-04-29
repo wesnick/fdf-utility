@@ -1,62 +1,77 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Wesnick\Tests\FdfUtility\Fields;
 
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
+use Wesnick\FdfUtility\Fields\ButtonField;
 use Wesnick\FdfUtility\Fields\PdfField;
 
 /**
  * @author Wesley O. Nichols <spanishwes@gmail.com>
- * @covers \Wesnick\FdfUtility\Fields\ButtonField
  */
-class ButtonFieldTest extends PdfFieldTest
+#[
+    CoversClass(ButtonField::class)
+]
+final class ButtonFieldTest extends PdfFieldTestCase
 {
-    public function buttonFieldFlagsProvider()
+    public function testConstructor(): void
     {
-        return [
-            [3, [], false],
-            [4, [PdfField::NO_TOGGLE_OFF, PdfField::RADIO_BUTTON], true],
-            [6, [PdfField::PUSH_BUTTON], true],
-            [24, [], false],
-            [25, [PdfField::NO_TOGGLE_OFF, PdfField::RADIO_BUTTON, PdfField::IN_UNISON], true],
-        ];
+        $field = new ButtonField('name', 0, 'default', ['foo' => 'bar'], 'description', 'justification');
+
+        self::assertSame('name', $field->name);
+        self::assertSame(0, $field->flag);
+        self::assertSame('default', $field->defaultValue);
+        self::assertSame(['foo' => 'bar'], $field->options);
+        self::assertSame('description', $field->description);
+        self::assertSame('justification', $field->justification);
+        self::assertNull($field->value);
     }
 
-    /**
-     * @dataProvider buttonFieldFlagsProvider
-     *
-     * @param int   $index
-     * @param array $flags
-     * @param bool  $expected
-     */
-    public function testButtonFlags($index, array $flags, bool $expected)
+    #[
+        DataProvider('buttonFieldFlagsProvider')
+    ]
+    public function testButtonFlags(int $index, array $flags, bool $expected): void
     {
         $field   = $this->fields[$index];
         $flagSum = 0;
         foreach ($flags as $flag) {
             $flagSum |= $flag;
-            $this->assertTrue($field->checkBitValue($flag));
+            self::assertTrue($field->checkBitValue($flag));
         }
 
         $out = $field->checkBitValue($flagSum);
-        $this->assertSame($expected, $out);
+        self::assertSame($expected, $out);
     }
 
-    /**
-     * @dataProvider buttonFieldFlagsProvider
-     *
-     * @param int   $index
-     * @param array $flags
-     */
-    public function testButtonConvenienceMethods($index, array $flags)
+    #[
+        DataProvider('buttonFieldFlagsProvider')
+    ]
+    public function testButtonConvenienceMethods(int $index, array $flags): void
     {
         $field   = $this->fields[$index];
-        $methods = PdfFieldTest::$conveninceMethods;
+        $methods = PdfFieldTestCase::$convenienceMethods;
         foreach ($methods as $flag => $method) {
             if (in_array($flag, $flags, true)) {
-                $this->assertTrue(call_user_func([$field, $method]), sprintf('Field Name %s, Index %d, %s is True', $field->getName(), $index, PdfField::$flags[$flag]));
+                self::assertTrue(
+                    $field->$method(),
+                    sprintf('Field Name %s, Index %d, %s is True', $field->name, $index, PdfField::$flags[$flag])
+                );
             } else {
-                $this->assertFalse(call_user_func([$field, $method]), sprintf('Field Name %s, Index %d, %s is False', $field->getName(), $index, PdfField::$flags[$flag]));
+                self::assertFalse(
+                    $field->$method(),
+                    sprintf('Field Name %s, Index %d, %s is False', $field->name, $index, PdfField::$flags[$flag])
+                );
             }
         }
+    }
+
+    public static function buttonFieldFlagsProvider(): \Generator
+    {
+        yield [3, [], false];
+        yield [4, [PdfField::NO_TOGGLE_OFF, PdfField::RADIO_BUTTON], true];
+        yield [6, [PdfField::PUSH_BUTTON], true];
+        yield [24, [], false];
+        yield [25, [PdfField::NO_TOGGLE_OFF, PdfField::RADIO_BUTTON, PdfField::IN_UNISON], true];
     }
 }

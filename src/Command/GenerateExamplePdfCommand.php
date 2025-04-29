@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Wesnick\FdfUtility\Command;
 
@@ -14,7 +14,7 @@ use Wesnick\FdfUtility\PdfForm;
  */
 class GenerateExamplePdfCommand extends Command
 {
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('wesnick:fdf:example-pdf')
@@ -39,15 +39,15 @@ class GenerateExamplePdfCommand extends Command
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $source     = $input->getArgument('source-pdf');
-        $target     = $input->getArgument('target-pdf');
-        $pdftk_path = $input->getOption('pdftk');
+        $source    = $input->getArgument('source-pdf');
+        $target    = $input->getArgument('target-pdf');
+        $pdftkPath = $input->getOption('pdftk');
 
         $pdfForm = new PdfForm();
-        $pdfForm->generatePdfExample($pdftk_path, $source, $target);
+        $pdfForm->generatePdfExample($pdftkPath, $source, $target);
 
-        return 0;
+        return self::SUCCESS;
     }
 }

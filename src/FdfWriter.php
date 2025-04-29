@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Wesnick\FdfUtility;
 
@@ -9,28 +9,24 @@ use Wesnick\FdfUtility\Fields\PdfField;
  */
 class FdfWriter
 {
-    const HEADER                =   "%FDF-1.2\x0d%\xe2\xe3\xcf\xd3\x0d\x0a";
-    const FOOTER                =   "trailer\x0d<<\x0d/Root 1 0 R \x0d\x0d>>\x0d%%EOF\x0d\x0a";
-    const ROOT_DICTIONARY_OPEN  =   "1 0 obj\x0d<< ";
-    const ROOT_DICTIONARY_CLOSE =   ">> \x0dendobj\x0d";
-    const FDF_DICTIONARY_OPEN   =   "\x0d/FDF << ";
-    const FDF_DICTIONARY_CLOSE  =   ">> \x0d";
-    const FIELD_TAG_OPEN        =   '/Fields [ ';
-    const FIELD_TAG_CLOSE       =   "] \x0d";
+    public const HEADER                = "%FDF-1.2\x0d%\xe2\xe3\xcf\xd3\x0d\x0a";
+    public const FOOTER                = "trailer\x0d<<\x0d/Root 1 0 R \x0d\x0d>>\x0d%%EOF\x0d\x0a";
+    public const ROOT_DICTIONARY_OPEN  = "1 0 obj\x0d<< ";
+    public const ROOT_DICTIONARY_CLOSE = ">> \x0dendobj\x0d";
+    public const FDF_DICTIONARY_OPEN   = "\x0d/FDF << ";
+    public const FDF_DICTIONARY_CLOSE  = ">> \x0d";
+    public const FIELD_TAG_OPEN        = '/Fields [ ';
+    public const FIELD_TAG_CLOSE       = "] \x0d";
+
+    private string $buffer = '';
 
     /**
-     * @var string
+     * @var array<PdfField>
      */
-    private $buffer;
-
-    /**
-     * @var array
-     */
-    private $fields = [];
+    private array $fields = [];
 
     public function __construct(array $fields = [])
     {
-        $this->buffer = '';
         foreach ($fields as $field) {
             $this->addField($field);
         }
@@ -41,14 +37,14 @@ class FdfWriter
         return $this->buffer;
     }
 
-    public function addField(PdfField $field)
+    public function addField(PdfField $field): void
     {
-        $nameParts = explode('.', $field->getName());
+        $nameParts = explode('.', $field->name);
 
-        $fields =&$this->fields;
+        $fields = &$this->fields;
         while (!empty($nameParts)) {
             $key    = array_shift($nameParts);
-            $fields =&$fields[$key];
+            $fields = &$fields[$key];
         }
 
         $fields = $field;
@@ -58,22 +54,18 @@ class FdfWriter
      * Encoding solution ported from php-pdftk.
      *
      * @see https://github.com/mikehaertl/php-pdftk/blob/master/src/FdfFile.php#L60
-     *
-     * @param $string
-     *
-     * @return string
      */
-    public static function escapePdfString($string)
+    public static function escapePdfString(?string $string): string
     {
         // Create UTF-16BE string encode as ASCII hex
         $utf16Value = mb_convert_encoding($string, 'UTF-16BE', 'UTF-8');
-        $utf16Value = strtr($utf16Value, array('(' => '\(', ')' => '\)', '\\' => '\\\\'));
-        return $utf16Value;
+
+        return strtr($utf16Value, ['(' => '\(', ')' => '\)', '\\' => '\\\\']);
     }
 
-    public function generate()
+    public function generate(): void
     {
-        $this->buffer  = self::HEADER;
+        $this->buffer = self::HEADER;
         $this->buffer .= self::ROOT_DICTIONARY_OPEN;
         $this->buffer .= self::FDF_DICTIONARY_OPEN;
         $this->buffer .= self::FIELD_TAG_OPEN;
@@ -86,17 +78,13 @@ class FdfWriter
 
     /**
      * Writes contents as a file.
-     *
-     * @param string $filename
-     *
-     * @return int|bool Bytes written
      */
-    public function save($filename)
+    public function save(string $filename): int|bool
     {
         return file_put_contents($filename, $this->buffer);
     }
 
-    private function writeFields($fields)
+    private function writeFields(array $fields): void
     {
         foreach ($fields as $key => $field) {
             if (is_array($field)) {
@@ -105,7 +93,7 @@ class FdfWriter
                 $this->writeFields($field);
                 $this->closeKids();
             } elseif ($field instanceof PdfField) {
-                if ($field->isPushButton() || null === $field->getValue()) {
+                if (null === $field->value || $field->isPushButton()) {
                     continue;
                 }
                 $this->appendKey($key);
@@ -114,28 +102,32 @@ class FdfWriter
         }
     }
 
-    private function appendKey($key)
+    private function appendKey(string $key): void
     {
         $this->buffer .= sprintf('<< /T (%s%s%s)', chr(0xFE), chr(0xFF), self::escapePdfString($key));
     }
 
-    private function openKids()
+    private function openKids(): void
     {
         $this->buffer .= ' /Kids [';
     }
 
-    private function closeKids()
+    private function closeKids(): void
     {
         $this->buffer .= '] >>';
     }
 
-    private function appendValue(PdfField $field)
+    private function appendValue(PdfField $field): void
     {
-        $valueFormat = $field->isRichText() ? 'RV' : 'V';
-        $this->buffer .= sprintf('/%s %s %s >>', $valueFormat, $field->getEscapedValue(), $this->getFieldFlags($field))."\n";
+        $this->buffer .= sprintf(
+                '/%s %s %s >>',
+                $field->isRichText() ? 'RV' : 'V',
+                $field->getEscapedValue(),
+                $this->getFieldFlags($field)
+            ) . "\n";
     }
 
-    private function getFieldFlags(PdfField $field)
+    private function getFieldFlags(PdfField $field): string
     {
         $flags = $field->isHidden() ? '/SetF 2 ' : '/ClrF 2 ';
         $flags .= $field->isReadOnly() ? '/SetFf 1 ' : '/ClrFf 1 ';

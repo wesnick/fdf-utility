@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Wesnick\FdfUtility\Command;
 
@@ -14,7 +14,7 @@ use Wesnick\FdfUtility\PdfForm;
  */
 class GenerateCsvExportCommand extends Command
 {
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('wesnick:fdf:csv-export')
@@ -39,15 +39,15 @@ class GenerateCsvExportCommand extends Command
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $source     = $input->getArgument('source-pdf');
-        $target     = $input->getArgument('target-csv');
-        $pdftk_path = $input->getOption('pdftk');
+        $source    = $input->getArgument('source-pdf');
+        $target    = $input->getArgument('target-csv');
+        $pdftkPath = $input->getOption('pdftk');
 
         $pdfForm = new PdfForm();
-        $pdfForm->generateCsvExport($pdftk_path, $source, $target);
+        $pdfForm->generateCsvExport($pdftkPath, $source, $target);
 
-        return 0;
+        return self::SUCCESS;
     }
 }

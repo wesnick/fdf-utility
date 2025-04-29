@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Wesnick\FdfUtility\Fields;
 
@@ -9,26 +9,23 @@ use Wesnick\FdfUtility\FdfWriter;
  */
 class ChoiceField extends PdfField
 {
-    public function getEscapedValue()
+    public function getEscapedValue(): string
     {
-        $value = null === $this->value ? $this->defaultValue : $this->value;
+        $value = $this->value ?? $this->defaultValue;
 
-        if ($this->isMultiSelect() && is_array($value)) {
+        if (is_array($value) && $this->isMultiSelect()) {
             $out = '';
             foreach ($value as $val) {
-                $out .= '('.FdfWriter::escapePdfString($val).')';
+                $out .= '(' . FdfWriter::escapePdfString($val) . ')';
             }
 
-            return '[ '.$out.' ]';
+            return '[ ' . $out . ' ]';
         }
 
         return sprintf('(%s%s%s)', chr(0xFE), chr(0xFF), FdfWriter::escapePdfString($value));
     }
 
-    /**
-     * @return string
-     */
-    public function getExampleValue()
+    public function getExampleValue(): mixed
     {
         if ($this->isEditableList()) {
             return 'Edited Value';
@@ -40,45 +37,45 @@ class ChoiceField extends PdfField
 
         $keys = array_keys($this->options);
 
-        return $this->options[$keys[mt_rand(0, (count($keys) - 1))]];
+        return $this->options[$keys[random_int(0, (count($keys) - 1))]];
     }
 
-    public function isMultiSelect()
+    public function isMultiSelect(): bool
     {
         return $this->checkBitValue(PdfField::MULTI_SELECT);
     }
 
-    public function isComboBox()
+    public function isComboBox(): bool
     {
         return $this->checkBitValue(PdfField::COMBO_BOX);
     }
 
-    public function isListBox()
+    public function isListBox(): bool
     {
         return !$this->checkBitValue(PdfField::COMBO_BOX);
     }
 
-    public function isEditableList()
+    public function isEditableList(): bool
     {
         return $this->checkBitValue(PdfField::EDITABLE_LIST) && $this->isComboBox();
     }
 
-    public function isSortedList()
+    public function isSortedList(): bool
     {
         return $this->checkBitValue(PdfField::SORTED_LIST);
     }
 
-    public function isCommitOnChange()
+    public function isCommitOnChange(): bool
     {
         return $this->checkBitValue(PdfField::COMMIT_ON_CHANGE);
     }
 
-    public function isNoSpellCheck()
+    public function isNoSpellCheck(): bool
     {
         return $this->checkBitValue(PdfField::NO_SPELL_CHECK);
     }
 
-    public function getType()
+    public function getType(): string
     {
         return 'choice';
     }
