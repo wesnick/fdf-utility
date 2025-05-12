@@ -11,6 +11,7 @@ use Wesnick\FdfUtility\Fields\PdfField;
  */
 class FdfWriter implements \Stringable
 {
+
     public const HEADER                = "%FDF-1.2\x0d%\xe2\xe3\xcf\xd3\x0d\x0a";
     public const FOOTER                = "trailer\x0d<<\x0d/Root 1 0 R \x0d\x0d>>\x0d%%EOF\x0d\x0a";
     public const ROOT_DICTIONARY_OPEN  = "1 0 obj\x0d<< ";
