@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Wesnick\FdfUtility\Fields;
 
@@ -21,9 +23,13 @@ class ButtonField extends PdfField
             return null;
         }
 
-        $keys = array_keys($this->options);
+        $keys  = array_keys($this->options);
+        $count = count($keys);
+        if (0 === $count) {
+            return null;
+        }
 
-        return $this->options[$keys[random_int(0, (count($keys) - 1))]];
+        return $this->options[$keys[random_int(0, $count - 1)]];
     }
 
     public function isNoToggleOff(): bool

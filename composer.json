@@ -10,14 +10,26 @@
             "email": "wesley.o.nichols@gmail.com"
         }
     ],
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "phpstan/extension-installer": true
+        }
+    },
     "require": {
         "php": "^8.1",
         "symfony/process": "^6.4 | 7.2.*"
     },
     "require-dev": {
-        "symfony/console": "^6.4 | 7.2.*",
+        "ext-iconv": "*",
+        "phpstan/extension-installer": "^1.4",
+        "phpstan/phpstan": "^2.1",
+        "phpstan/phpstan-strict-rules": "^2.0",
         "phpunit/phpunit": "^10.0",
-        "ext-iconv": "*"
+        "rector/rector": "^2.0",
+        "slevomat/coding-standard": "~8.0",
+        "symfony/console": "^6.4 | 7.2.*"
     },
     "autoload": {
         "psr-4": {

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Wesnick\Tests\FdfUtility\Fields;
 
@@ -25,9 +27,12 @@ final class ChoiceFieldTest extends PdfFieldTestCase
         self::assertSame(['foo' => 'bar'], $field->options);
         self::assertSame('description', $field->description);
         self::assertSame('justification', $field->justification);
-        self::assertNull($field->value);
+        self::assertNull($field->getValue());
     }
 
+    /**
+     * @param array<int> $flags
+     */
     #[
         DataProvider('choiceFieldFlagsProvider')
     ]
@@ -44,6 +49,9 @@ final class ChoiceFieldTest extends PdfFieldTestCase
         self::assertSame($expected, $out);
     }
 
+    /**
+     * @param array<int> $flags
+     */
     #[
         DataProvider('choiceFieldFlagsProvider')
     ]
@@ -52,15 +60,27 @@ final class ChoiceFieldTest extends PdfFieldTestCase
         $field   = $this->fields[$index];
         $methods = PdfFieldTestCase::$convenienceMethods;
         foreach ($methods as $flag => $method) {
+            // @phpstan-ignore method.dynamicName
+            $value = $field->$method();
             if (in_array($flag, $flags, true)) {
                 self::assertTrue(
-                    $field->$method(),
-                    sprintf('Field Name %s, Index %d, %s is True', $field->name, $index, PdfField::$flags[$flag])
+                    $value,
+                    sprintf(
+                        'Field Name %s, Index %d, %s is True',
+                        $field->name,
+                        $index,
+                        self::$flags[$flag]
+                    )
                 );
             } else {
                 self::assertFalse(
-                    $field->$method(),
-                    sprintf('Field Name %s, Index %d, %s is False', $field->name, $index, PdfField::$flags[$flag])
+                    $value,
+                    sprintf(
+                        'Field Name %s, Index %d, %s is False',
+                        $field->name,
+                        $index,
+                        self::$flags[$flag]
+                    )
                 );
             }
         }
@@ -68,7 +88,12 @@ final class ChoiceFieldTest extends PdfFieldTestCase
 
     public function testDefaultValueIsRespected(): void
     {
-        $field = new ChoiceField('default_value', 0, 'default', ['default' => 'default', 'default1' => 'default1'], null
+        $field = new ChoiceField(
+            'default_value',
+            0,
+            'default',
+            ['default' => 'default', 'default1' => 'default1'],
+            null
         );
 
         self::assertSame(
@@ -77,14 +102,14 @@ final class ChoiceFieldTest extends PdfFieldTestCase
             'Default Value is respected on null value'
         );
 
-        $field->value = 'default1';
+        $field->setValue('default1');
         self::assertSame(
             iconv('UTF-8', 'UTF-16BE', '⣾＀搀攀昀愀甀氀琀ㄩ'),
             $field->getEscapedValue(),
             'Default Value is ignored if value not null'
         );
 
-        $field->value = '';
+        $field->setValue('');
         self::assertSame(
             iconv('UTF-8', 'UTF-16BE', '⣾Ｉ'),
             $field->getEscapedValue(),
@@ -96,16 +121,33 @@ final class ChoiceFieldTest extends PdfFieldTestCase
     {
         yield [1, [PdfField::COMBO_BOX], true];
         yield [5, [], false];
-        yield [19, [PdfField::COMBO_BOX, PdfField::EDITABLE_LIST, PdfField::NO_SPELL_CHECK], true];
-        yield [20, [PdfField::COMBO_BOX, PdfField::SORTED_LIST, PdfField::NO_SPELL_CHECK], true];
+        yield [
+            19,
+            [PdfField::COMBO_BOX, PdfField::EDITABLE_LIST, PdfField::NO_SPELL_CHECK],
+            true,
+        ];
+        yield [
+            20,
+            [PdfField::COMBO_BOX, PdfField::SORTED_LIST, PdfField::NO_SPELL_CHECK],
+            true,
+        ];
         yield [
             21,
-            [PdfField::REQUIRED, PdfField::COMBO_BOX, PdfField::NO_SPELL_CHECK, PdfField::COMMIT_ON_CHANGE],
+            [
+                PdfField::REQUIRED,
+                PdfField::COMBO_BOX,
+                PdfField::NO_SPELL_CHECK,
+                PdfField::COMMIT_ON_CHANGE,
+            ],
             true,
         ];
         yield [22, [PdfField::SORTED_LIST], true];
         yield [23, [PdfField::MULTI_SELECT], true];
         yield [26, [], false];
-        yield [27, [PdfField::COMBO_BOX, PdfField::EDITABLE_LIST, PdfField::NO_SPELL_CHECK], true];
+        yield [
+            27,
+            [PdfField::COMBO_BOX, PdfField::EDITABLE_LIST, PdfField::NO_SPELL_CHECK],
+            true,
+        ];
     }
 }

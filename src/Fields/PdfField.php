@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Wesnick\FdfUtility\Fields;
 
@@ -8,6 +10,7 @@ namespace Wesnick\FdfUtility\Fields;
 abstract class PdfField
 {
     // Bitmask      // Binary Position (1-based index)
+    // phpcs:disable SlevomatCodingStandard.Commenting.DisallowCommentAfterCode
     public const READ_ONLY        = 1;            // 1
     public const REQUIRED         = 2;            // 2
     public const NO_EXPORT        = 4;            // 3
@@ -28,34 +31,12 @@ abstract class PdfField
     public const IN_UNISON        = 33554432;     // 26
     public const COMMIT_ON_CHANGE = 67108864;     // 27
 
+    // phpcs:enable
+    protected ?string $value = null;
+
     /**
-     * Human-readable description of bit-masks.
-     *
-     * @var array<int, string>
+     * @param array<string, mixed> $options
      */
-    public static array $flags = [
-        self::READ_ONLY        => 'Read Only',
-        self::REQUIRED         => 'Required',
-        self::NO_EXPORT        => 'No Export',
-        self::MULTI_LINE       => 'Multi-line',
-        self::PASSWORD         => 'Password',
-        self::NO_TOGGLE_OFF    => 'No Toggle Off',
-        self::RADIO_BUTTON     => 'Radio Button',
-        self::PUSH_BUTTON      => 'Push Button',
-        self::COMBO_BOX        => 'Combo Box',
-        self::EDITABLE_LIST    => 'Editable List',
-        self::SORTED_LIST      => 'Sorted List',
-        self::FILE_INPUT       => 'File Input',
-        self::MULTI_SELECT     => 'Multi-select',
-        self::NO_SPELL_CHECK   => 'No Spell Check',
-        self::NO_SCROLL        => 'No Scroll',
-        self::COMB_FORMATTING  => 'Comb Formatting',
-        self::RICH_TEXT        => 'Rich Text',
-        self::COMMIT_ON_CHANGE => 'Commit on Change',
-    ];
-
-    public ?string $value = null;
-
     public function __construct(
         public readonly string  $name,
         public readonly int     $flag,
@@ -64,6 +45,24 @@ abstract class PdfField
         public readonly ?string $description = '',
         public readonly string  $justification = 'Left',
     ) {
+    }
+
+    abstract public function getEscapedValue(): string;
+
+    abstract public function getExampleValue(): mixed;
+
+    abstract public function getType(): string;
+
+    public function getValue(): ?string
+    {
+        return $this->value;
+    }
+
+    public function setValue(?string $value): self
+    {
+        $this->value = $value;
+
+        return $this;
     }
 
     /**
@@ -189,7 +188,6 @@ abstract class PdfField
     /*
      * Both Text and Choice Fields
      */
-
     public function isNoSpellCheck(): bool
     {
         return false;
@@ -199,10 +197,4 @@ abstract class PdfField
     {
         return (bool) ($this->flag & $position);
     }
-
-    abstract public function getEscapedValue(): string;
-
-    abstract public function getExampleValue(): mixed;
-
-    abstract public function getType(): string;
 }

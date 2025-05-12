@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Wesnick\FdfUtility\Parser;
 
@@ -15,7 +17,7 @@ class PdftkDumpParser
     /**
      * Current index in the contents array.
      */
-    private int $currentIndex;
+    private int $currentIndex = 0;
 
     /**
      * Array of file lines in the PDFTK Dump File.
@@ -31,8 +33,12 @@ class PdftkDumpParser
 
     public function __construct(string $file)
     {
-        $this->currentContents = file($file);
-        $this->currentIndex    = 0;
+        $content = file($file);
+        if (!is_array($content)) {
+            throw new \RuntimeException('Cannot parse file: ' . $file);
+        }
+
+        $this->currentContents = $content;
     }
 
     /**
@@ -46,7 +52,8 @@ class PdftkDumpParser
             $currentIndex = $this->currentIndex;
             $nextIndex    = $this->getNextBlockIndex();
             $fieldValues  = $this->processFieldBlock($currentIndex, $nextIndex);
-            if ($field = $this->createFieldFromPdftkDump($fieldValues)) {
+            $field        = $this->createFieldFromPdftkDump($fieldValues);
+            if (null !== $field) {
                 $this->fields[] = $field;
             }
         }
@@ -56,12 +63,15 @@ class PdftkDumpParser
 
     /**
      * Process a Field Element.
+     *
+     * @return array<string, mixed>
      */
     private function processFieldBlock(int $start, int $stop): array
     {
+        /** @var array<string, mixed> $itemValues */
         $itemValues = [];
 
-        for ($x = $start; $x < $stop; ++$x) {
+        for ($x = $start; $x < $stop; $x++) {
             if (!str_contains($this->currentContents[$x], ':')) {
                 continue;
             }
@@ -85,7 +95,8 @@ class PdftkDumpParser
     private function nextBlockIndex(): bool
     {
         while ($this->currentIndex < count($this->currentContents) - 1) {
-            if (str_starts_with($this->currentContents[$this->currentIndex++], '---')) {
+            $this->currentIndex++;
+            if (str_starts_with($this->currentContents[$this->currentIndex], '---')) {
                 return true;
             }
         }
@@ -101,14 +112,18 @@ class PdftkDumpParser
         $index = $this->currentIndex;
 
         while ($index < count($this->currentContents) - 1) {
-            if (str_starts_with($this->currentContents[++$index], '---')) {
-                return $index--;
+            $index++;
+            if (str_starts_with($this->currentContents[$index], '---')) {
+                return $index;
             }
         }
 
         return count($this->currentContents);
     }
 
+    /**
+     * @param array<string, mixed> $dump
+     */
     private function createFieldFromPdftkDump(array $dump): ?PdfField
     {
         $name         = $dump['FieldName'];
@@ -117,7 +132,7 @@ class PdftkDumpParser
 
         $options      = [];
         $stateOptions = $dump['FieldStateOption'] ?? [];
-        if (!empty($stateOptions)) {
+        if (is_array($stateOptions)) {
             foreach ($stateOptions as $option) {
                 $options[$option] = $option;
             }
@@ -136,13 +151,13 @@ class PdftkDumpParser
             case 'Text':
                 $field = new TextField($name, $flag, $defaultValue, $options, $description, $justification);
                 // Update max length property.
-                $field->maxLength = isset($dump['FieldMaxLength']) ? (int) $dump['FieldMaxLength'] : null;
+                $field->setMaxLength(isset($dump['FieldMaxLength']) ? (int) $dump['FieldMaxLength'] : null);
                 break;
             default:
                 return null;
         }
 
-        $field->value = $dump['FieldValue'] ?? null;
+        $field->setValue($dump['FieldValue'] ?? null);
 
         return $field;
     }

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Wesnick\FdfUtility\Fields;
 
@@ -9,7 +11,19 @@ use Wesnick\FdfUtility\FdfWriter;
  */
 class TextField extends PdfField
 {
-    public ?int $maxLength = null;
+    protected ?int $maxLength = null;
+
+    public function getMaxLength(): ?int
+    {
+        return $this->maxLength;
+    }
+
+    public function setMaxLength(?int $maxLength): self
+    {
+        $this->maxLength = $maxLength;
+
+        return $this;
+    }
 
     public function getEscapedValue(): string
     {
@@ -26,7 +40,7 @@ class TextField extends PdfField
             $value .= "\n" . 'Multi-line next line.' . "\n" . 'More Lines...';
         }
         // Comb formatting fills entire comb
-        if ($this->isCombFormatting()) {
+        if (null !== $this->maxLength && $this->isCombFormatting()) {
             $value = str_pad($value, $this->maxLength, 'X');
         }
         // Format a rich text string

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Wesnick\Tests\FdfUtility\Fields;
 
@@ -25,9 +27,12 @@ final class ButtonFieldTest extends PdfFieldTestCase
         self::assertSame(['foo' => 'bar'], $field->options);
         self::assertSame('description', $field->description);
         self::assertSame('justification', $field->justification);
-        self::assertNull($field->value);
+        self::assertNull($field->getValue());
     }
 
+    /**
+     * @param array<int> $flags
+     */
     #[
         DataProvider('buttonFieldFlagsProvider')
     ]
@@ -35,6 +40,7 @@ final class ButtonFieldTest extends PdfFieldTestCase
     {
         $field   = $this->fields[$index];
         $flagSum = 0;
+
         foreach ($flags as $flag) {
             $flagSum |= $flag;
             self::assertTrue($field->checkBitValue($flag));
@@ -44,6 +50,9 @@ final class ButtonFieldTest extends PdfFieldTestCase
         self::assertSame($expected, $out);
     }
 
+    /**
+     * @param array<int> $flags
+     */
     #[
         DataProvider('buttonFieldFlagsProvider')
     ]
@@ -52,15 +61,27 @@ final class ButtonFieldTest extends PdfFieldTestCase
         $field   = $this->fields[$index];
         $methods = PdfFieldTestCase::$convenienceMethods;
         foreach ($methods as $flag => $method) {
+            // @phpstan-ignore method.dynamicName
+            $value = $field->$method();
             if (in_array($flag, $flags, true)) {
                 self::assertTrue(
-                    $field->$method(),
-                    sprintf('Field Name %s, Index %d, %s is True', $field->name, $index, PdfField::$flags[$flag])
+                    $value,
+                    sprintf(
+                        'Field Name %s, Index %d, %s is True',
+                        $field->name,
+                        $index,
+                        self::$flags[$flag]
+                    )
                 );
             } else {
                 self::assertFalse(
-                    $field->$method(),
-                    sprintf('Field Name %s, Index %d, %s is False', $field->name, $index, PdfField::$flags[$flag])
+                    $value,
+                    sprintf(
+                        'Field Name %s, Index %d, %s is False',
+                        $field->name,
+                        $index,
+                        self::$flags[$flag]
+                    )
                 );
             }
         }
@@ -72,6 +93,10 @@ final class ButtonFieldTest extends PdfFieldTestCase
         yield [4, [PdfField::NO_TOGGLE_OFF, PdfField::RADIO_BUTTON], true];
         yield [6, [PdfField::PUSH_BUTTON], true];
         yield [24, [], false];
-        yield [25, [PdfField::NO_TOGGLE_OFF, PdfField::RADIO_BUTTON, PdfField::IN_UNISON], true];
+        yield [
+            25,
+            [PdfField::NO_TOGGLE_OFF, PdfField::RADIO_BUTTON, PdfField::IN_UNISON],
+            true,
+        ];
     }
 }

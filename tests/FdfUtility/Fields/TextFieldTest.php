@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Wesnick\Tests\FdfUtility\Fields;
 
@@ -15,6 +17,9 @@ use Wesnick\FdfUtility\Fields\TextField;
 ]
 final class TextFieldTest extends PdfFieldTestCase
 {
+    /**
+     * @param array<int> $flags
+     */
     #[
         DataProvider('textFieldFlagsProvider')
     ]
@@ -29,7 +34,7 @@ final class TextFieldTest extends PdfFieldTestCase
 
         $out = $field->checkBitValue($flagSum);
         $sum = [];
-        foreach (PdfField::$flags as $f => $d) {
+        foreach (self::$flags as $f => $d) {
             if ($field->checkBitValue($f)) {
                 $sum[$f] = $d;
             }
@@ -39,6 +44,9 @@ final class TextFieldTest extends PdfFieldTestCase
         self::assertSame($expected, $out);
     }
 
+    /**
+     * @param array<int> $flags
+     */
     #[
         DataProvider('textFieldFlagsProvider')
     ]
@@ -47,15 +55,17 @@ final class TextFieldTest extends PdfFieldTestCase
         $field   = $this->fields[$index];
         $methods = PdfFieldTestCase::$convenienceMethods;
         foreach ($methods as $flag => $method) {
+            // @phpstan-ignore method.dynamicName
+            $value = $field->$method();
             if (in_array($flag, $flags, true)) {
                 self::assertTrue(
-                    $field->$method(),
-                    sprintf('Field Name %s, Index %d, %s is True', $field->name, $index, PdfField::$flags[$flag])
+                    $value,
+                    sprintf('Field Name %s, Index %d, %s is True', $field->name, $index, self::$flags[$flag])
                 );
             } else {
                 self::assertFalse(
-                    $field->$method(),
-                    sprintf('Field Name %s, Index %d, %s is False', $field->name, $index, PdfField::$flags[$flag])
+                    $value,
+                    sprintf('Field Name %s, Index %d, %s is False', $field->name, $index, self::$flags[$flag])
                 );
             }
         }
@@ -71,14 +81,14 @@ final class TextFieldTest extends PdfFieldTestCase
             'Default Value is respected on null value'
         );
 
-        $field->value = 'value';
+        $field->setValue('value');
         self::assertSame(
             iconv('UTF-8', 'UTF-16BE', '⣾＀瘀愀氀甀攩'),
             $field->getEscapedValue(),
             'Default Value is ignored if value not null'
         );
 
-        $field->value = '';
+        $field->setValue('');
         self::assertSame(
             iconv('UTF-8', 'UTF-16BE', '⣾Ｉ'),
             $field->getEscapedValue(),

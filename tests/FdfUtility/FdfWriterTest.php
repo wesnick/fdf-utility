@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Wesnick\Tests\FdfUtility;
 
@@ -21,7 +23,7 @@ final class FdfWriterTest extends TestCase
     ]
     public function testEscapePdfString(string $input, string $escaped): void
     {
-        $this->assertSame(iconv('UTF-8', 'UTF-16BE', $escaped), FdfWriter::escapePdfString($input));
+        self::assertSame(iconv('UTF-8', 'UTF-16BE', $escaped), FdfWriter::escapePdfString($input));
     }
 
     #[
@@ -29,7 +31,7 @@ final class FdfWriterTest extends TestCase
     ]
     public function testEscapePdfNames(string $input, string $escaped): void
     {
-        $this->assertSame(iconv('UTF-8', 'UTF-16BE', $escaped), FdfWriter::escapePdfString($input));
+        self::assertSame(iconv('UTF-8', 'UTF-16BE', $escaped), FdfWriter::escapePdfString($input));
     }
 
     public function testAddFields(): void
@@ -51,29 +53,42 @@ final class FdfWriterTest extends TestCase
         $refProperty = $refClass->getProperty('fields');
         $refProperty->setAccessible(true);
 
-        $this->assertSame($expected, $refProperty->getValue($writer));
+        self::assertSame($expected, $refProperty->getValue($writer));
     }
 
     public static function pdfStringsProvider(): \Generator
     {
-        yield ['abcdef~', 'abcdef~']; // printable characters
-        yield ['John Smith', 'John Smith']; // printable characters
-        yield ['806 – 4815 Eldoràdo Mews', '806 – 4815 Eldoràdo Mews']; // printable characters
-        yield ['çÇÀàÈèùÉéâÂÊêÎîÔôÛûëïöüÿæ', 'çÇÀàÈèùÉéâÂÊêÎîÔôÛûëïöüÿæ']; // printable characters
-        yield ['4045 €', '4045 €']; // printable characters
-        yield ['()', '\⠀尩'];  // escaped characters (,)
-        yield ['xx xx', 'xx xx'];  // space print normally
-        yield ['xx' . chr(10) . 'xx', 'xx' . chr(10) . 'xx'];  // non-printable characters
+        // printable characters
+        yield ['abcdef~', 'abcdef~'];
+        // printable characters
+        yield ['John Smith', 'John Smith'];
+        // printable characters
+        yield ['806 – 4815 Eldoràdo Mews', '806 – 4815 Eldoràdo Mews'];
+        // printable characters
+        yield ['çÇÀàÈèùÉéâÂÊêÎîÔôÛûëïöüÿæ', 'çÇÀàÈèùÉéâÂÊêÎîÔôÛûëïöüÿæ'];
+        // printable characters
+        yield ['4045 €', '4045 €'];
+        // escaped characters (,)
+        yield ['()', '\⠀尩'];
+        // space print normally
+        yield ['xx xx', 'xx xx'];
+        // non-printable characters
+        yield ['xx' . chr(10) . 'xx', 'xx' . chr(10) . 'xx'];
 
         // TODO test for backslash being scaped
-        //  ['Thank you, broker Alison 855-000-0000\\', 'Thank you, broker Alison 855-000-0000\\\\'],  // escaped characters \, \
+        //  escaped characters \, \
+        //  ['Thank you, broker Alison 855-000-0000\\', 'Thank you, broker Alison 855-000-0000\\\\'],
     }
 
     public static function pdfNamesProvider(): \Generator
     {
-        yield ['abcdef~', 'abcdef~']; // printable characters
-        yield ['()', '\⠀尩'];  //  (,) are not escaped
-        yield ['xx xx', 'xx xx'];  // space print normally
-        yield ['xx' . chr(10) . 'xx', 'xx' . chr(10) . 'xx'];  // non-printable characters
+        // printable characters
+        yield ['abcdef~', 'abcdef~'];
+        //  (,) are not escaped
+        yield ['()', '\⠀尩'];
+        // space print normally
+        yield ['xx xx', 'xx xx'];
+        // non-printable characters
+        yield ['xx' . chr(10) . 'xx', 'xx' . chr(10) . 'xx'];
     }
 }

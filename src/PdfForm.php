@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Wesnick\FdfUtility;
 
@@ -12,9 +14,6 @@ use Wesnick\FdfUtility\Parser\PdftkDumpParser;
 class PdfForm
 {
     /**
-     * @param string $pdftkBinary    The path to pdftk binary
-     * @param string $pdf    The path to the PDF file
-     *
      * @return array<PdfField>
      */
     public static function extractFieldsFromPdf(string $pdftkBinary, string $pdf): array
@@ -35,12 +34,12 @@ class PdfForm
     {
         $fields = self::extractFieldsFromPdf($pdftkBinary, $sourcePdf);
 
-        if (empty($fields)) {
+        if ([] === $fields) {
             throw new \RuntimeException('PDF does not have any fields');
         }
 
         foreach ($fields as $field) {
-            $field->value = $field->getExampleValue();
+            $field->setValue($field->getExampleValue());
         }
 
         $fdfFile = tempnam(sys_get_temp_dir(), 'fdf');
@@ -79,7 +78,7 @@ class PdfForm
                 '',
             ];
 
-            if (($field instanceof Fields\ButtonField || $field instanceof Fields\ChoiceField) && $field->options) {
+            if ($field instanceof Fields\ButtonField || $field instanceof Fields\ChoiceField) {
                 $options     = array_values(array_flip($field->options));
                 $csvEntry[3] = implode('|', $options);
                 $csvEntry[4] = '';
@@ -91,7 +90,7 @@ class PdfForm
                 }
             } elseif ($field instanceof Fields\TextField) {
                 // Just use the name as the value
-                $csvEntry[4] = $field->maxLength;
+                $csvEntry[4] = $field->getMaxLength();
                 $csvEntry[5] = $field->getExampleValue();
             }
 
@@ -99,6 +98,9 @@ class PdfForm
         }
 
         $handle = fopen($targetFile, 'wb');
+        if (false === $handle) {
+            throw new \RuntimeException('Unable to open file: ' . $targetFile);
+        }
         foreach ($csvFields as $row) {
             fputcsv($handle, $row);
         }

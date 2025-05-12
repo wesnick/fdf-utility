@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Wesnick\FdfUtility\Command;
 
@@ -19,23 +21,9 @@ class GenerateExamplePdfCommand extends Command
         $this
             ->setName('wesnick:fdf:example-pdf')
             ->setDescription('Generate an example filled PDF Form from a blank PDF Form.')
-            ->addArgument(
-                'source-pdf',
-                InputArgument::REQUIRED,
-                'The empty PDF Form file to fill'
-            )
-            ->addArgument(
-                'target-pdf',
-                InputArgument::REQUIRED,
-                'The target path to write the filled PDF Form file'
-            )
-            ->addOption(
-                'pdftk',
-                null,
-                InputOption::VALUE_OPTIONAL,
-                'PDFTK Binary path if not in system PATH',
-                'pdftk'
-            )
+            ->addArgument('source-pdf', InputArgument::REQUIRED, 'The empty PDF Form file to fill')
+            ->addArgument('target-pdf', InputArgument::REQUIRED, 'The target path to write the filled PDF Form file')
+            ->addOption('pdftk', null, InputOption::VALUE_OPTIONAL, 'PDFTK Binary path if not in system PATH', 'pdftk')
         ;
     }
 
@@ -45,8 +33,7 @@ class GenerateExamplePdfCommand extends Command
         $target    = $input->getArgument('target-pdf');
         $pdftkPath = $input->getOption('pdftk');
 
-        $pdfForm = new PdfForm();
-        $pdfForm->generatePdfExample($pdftkPath, $source, $target);
+        PdfForm::generatePdfExample($pdftkPath, $source, $target);
 
         return self::SUCCESS;
     }

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Wesnick\FdfUtility\Fields;
 
@@ -13,14 +15,15 @@ class ChoiceField extends PdfField
     {
         $value = $this->value ?? $this->defaultValue;
 
-        if (is_array($value) && $this->isMultiSelect()) {
-            $out = '';
-            foreach ($value as $val) {
-                $out .= '(' . FdfWriter::escapePdfString($val) . ')';
-            }
-
-            return '[ ' . $out . ' ]';
-        }
+        // TODO this code is never reached as value should not be array type!!!
+//        if (is_array($value) && $this->isMultiSelect()) {
+//            $out = '';
+//            foreach ($value as $val) {
+//                $out .= '(' . FdfWriter::escapePdfString($val) . ')';
+//            }
+//
+//            return '[ ' . $out . ' ]';
+//        }
 
         return sprintf('(%s%s%s)', chr(0xFE), chr(0xFF), FdfWriter::escapePdfString($value));
     }
@@ -35,9 +38,14 @@ class ChoiceField extends PdfField
             return $this->options;
         }
 
-        $keys = array_keys($this->options);
+        $keys  = array_keys($this->options);
+        $count = count($keys);
 
-        return $this->options[$keys[random_int(0, (count($keys) - 1))]];
+        if (0 === $count) {
+            return null;
+        }
+
+        return $this->options[$keys[random_int(0, $count - 1)]];
     }
 
     public function isMultiSelect(): bool

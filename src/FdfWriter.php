@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Wesnick\FdfUtility;
 
@@ -7,7 +9,7 @@ use Wesnick\FdfUtility\Fields\PdfField;
 /**
  * @author Wesley O. Nichols <spanishwes@gmail.com>
  */
-class FdfWriter
+class FdfWriter implements \Stringable
 {
     public const HEADER                = "%FDF-1.2\x0d%\xe2\xe3\xcf\xd3\x0d\x0a";
     public const FOOTER                = "trailer\x0d<<\x0d/Root 1 0 R \x0d\x0d>>\x0d%%EOF\x0d\x0a";
@@ -25,6 +27,9 @@ class FdfWriter
      */
     private array $fields = [];
 
+    /**
+     * @param array<PdfField> $fields
+     */
     public function __construct(array $fields = [])
     {
         foreach ($fields as $field) {
@@ -32,7 +37,7 @@ class FdfWriter
         }
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->buffer;
     }
@@ -40,27 +45,15 @@ class FdfWriter
     public function addField(PdfField $field): void
     {
         $nameParts = explode('.', $field->name);
+        $fields    = &$this->fields;
 
-        $fields = &$this->fields;
-        while (!empty($nameParts)) {
-            $key    = array_shift($nameParts);
-            $fields = &$fields[$key];
+        $it = new \ArrayIterator($nameParts);
+        while ($it->valid()) {
+            $fields = &$fields[$it->current()];
+            $it->next();
         }
 
         $fields = $field;
-    }
-
-    /**
-     * Encoding solution ported from php-pdftk.
-     *
-     * @see https://github.com/mikehaertl/php-pdftk/blob/master/src/FdfFile.php#L60
-     */
-    public static function escapePdfString(?string $string): string
-    {
-        // Create UTF-16BE string encode as ASCII hex
-        $utf16Value = mb_convert_encoding($string, 'UTF-16BE', 'UTF-8');
-
-        return strtr($utf16Value, ['(' => '\(', ')' => '\)', '\\' => '\\\\']);
     }
 
     public function generate(): void
@@ -84,6 +77,22 @@ class FdfWriter
         return file_put_contents($filename, $this->buffer);
     }
 
+    /**
+     * Encoding solution ported from php-pdftk.
+     *
+     * @see https://github.com/mikehaertl/php-pdftk/blob/master/src/FdfFile.php#L60
+     */
+    public static function escapePdfString(?string $string): string
+    {
+        // Create UTF-16BE string encode as ASCII hex
+        $utf16Value = mb_convert_encoding($string ?? '', 'UTF-16BE', 'UTF-8');
+
+        return strtr($utf16Value, ['(' => '\(', ')' => '\)', '\\' => '\\\\']);
+    }
+
+    /**
+     * @param array<string, PdfField|array<PdfField>> $fields
+     */
     private function writeFields(array $fields): void
     {
         foreach ($fields as $key => $field) {
@@ -93,7 +102,7 @@ class FdfWriter
                 $this->writeFields($field);
                 $this->closeKids();
             } elseif ($field instanceof PdfField) {
-                if (null === $field->value || $field->isPushButton()) {
+                if ($field->isPushButton() || null === $field->getValue()) {
                     continue;
                 }
                 $this->appendKey($key);
@@ -120,11 +129,12 @@ class FdfWriter
     private function appendValue(PdfField $field): void
     {
         $this->buffer .= sprintf(
-                '/%s %s %s >>',
-                $field->isRichText() ? 'RV' : 'V',
-                $field->getEscapedValue(),
-                $this->getFieldFlags($field)
-            ) . "\n";
+            '/%s %s %s >>',
+            $field->isRichText() ? 'RV' : 'V',
+            $field->getEscapedValue(),
+            $this->getFieldFlags($field)
+        );
+        $this->buffer .= "\n";
     }
 
     private function getFieldFlags(PdfField $field): string

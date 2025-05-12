@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Wesnick\Tests\FdfUtility\Parser;
 
@@ -19,7 +21,7 @@ final class PdftkDumpParserTest extends TestCase
     /**
      * @var array<PdfField>
      */
-    private ?array $fields;
+    private array $fields;
 
     public function setUp(): void
     {
@@ -55,6 +57,9 @@ final class PdftkDumpParserTest extends TestCase
         self::assertSame($default, $this->fields[$index]->defaultValue);
     }
 
+    /**
+     * @param array<string> $options
+     */
     #[
         DataProvider('optionsProvider')
     ]
@@ -110,12 +115,18 @@ final class PdftkDumpParserTest extends TestCase
 
     public static function valueProvider(): \Generator
     {
-        yield [8, '⣾＀爀攀愀搀开漀渀氀礩']; // (read_only)
-        yield [12, '⣾＀搀攀昀愀甀氀琀开瘀愀氀甀攩']; // (default_value)
-        yield [24, '⣾＀夀攀猩']; // (Yes)
-        yield [25, '⣾＀夀攀猩']; // (Yes)
-        yield [26, '⣾＀吀漀洩']; // (Tom)
-        yield [27, '⣾＀䴀愀爀挀漩']; // (Marco)
+        // (read_only)
+        yield [8, '⣾＀爀攀愀搀开漀渀氀礩'];
+        // (default_value)
+        yield [12, '⣾＀搀攀昀愀甀氀琀开瘀愀氀甀攩'];
+        // (Yes)
+        yield [24, '⣾＀夀攀猩'];
+        // (Yes)
+        yield [25, '⣾＀夀攀猩'];
+        // (Tom)
+        yield [26, '⣾＀吀漀洩'];
+        // (Marco)
+        yield [27, '⣾＀䴀愀爀挀漩'];
     }
 
     public static function defaultValueProvider(): \Generator

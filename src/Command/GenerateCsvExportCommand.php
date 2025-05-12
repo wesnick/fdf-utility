@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Wesnick\FdfUtility\Command;
 
@@ -19,23 +21,9 @@ class GenerateCsvExportCommand extends Command
         $this
             ->setName('wesnick:fdf:csv-export')
             ->setDescription('Generate a CSV export of form information from a blank PDF Form.')
-            ->addArgument(
-                'source-pdf',
-                InputArgument::REQUIRED,
-                'The empty PDF Form file to read'
-            )
-            ->addArgument(
-                'target-csv',
-                InputArgument::REQUIRED,
-                'The target path to write the CSV file'
-            )
-            ->addOption(
-                'pdftk',
-                null,
-                InputOption::VALUE_OPTIONAL,
-                'PDFTK Binary path if not in system PATH',
-                'pdftk'
-            )
+            ->addArgument('source-pdf', InputArgument::REQUIRED, 'The empty PDF Form file to read')
+            ->addArgument('target-csv', InputArgument::REQUIRED, 'The target path to write the CSV file')
+            ->addOption('pdftk', null, InputOption::VALUE_OPTIONAL, 'PDFTK Binary path if not in system PATH', 'pdftk')
         ;
     }
 
@@ -45,8 +33,7 @@ class GenerateCsvExportCommand extends Command
         $target    = $input->getArgument('target-csv');
         $pdftkPath = $input->getOption('pdftk');
 
-        $pdfForm = new PdfForm();
-        $pdfForm->generateCsvExport($pdftkPath, $source, $target);
+        PdfForm::generateCsvExport($pdftkPath, $source, $target);
 
         return self::SUCCESS;
     }
