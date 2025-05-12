@@ -132,7 +132,7 @@ class PdftkDumpParser
         $defaultValue = $dump['FieldValueDefault'] ?? null;
 
         $options      = [];
-        $stateOptions = $dump['FieldStateOption'] ?? [];
+        $stateOptions = $dump['FieldStateOption'] ?? null;
         if (is_array($stateOptions)) {
             foreach ($stateOptions as $option) {
                 $options[$option] = $option;

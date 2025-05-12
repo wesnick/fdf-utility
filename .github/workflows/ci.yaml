@@ -24,26 +24,26 @@ jobs:
                 dependencies:
                     - "highest"
                 include:
-                    - php-version: "8.1"
-                      dependencies: "lowest"
+                    -   php-version: "8.1"
+                        dependencies: "lowest"
 
         steps:
-            - name: "Checkout"
-              uses: "actions/checkout@v4"
-              with:
-                  fetch-depth: 2
+            -   name: "Checkout"
+                uses: "actions/checkout@v4"
+                with:
+                    fetch-depth: 2
 
-            - name: "Install PHP"
-              uses: "shivammathur/setup-php@v2"
-              with:
-                  php-version: "${{ matrix.php-version }}"
-                  coverage: xdebug
-                  ini-values: "zend.assertions=1"
+            -   name: "Install PHP"
+                uses: "shivammathur/setup-php@v2"
+                with:
+                    php-version: "${{ matrix.php-version }}"
+                    coverage: xdebug
+                    ini-values: "zend.assertions=1"
 
-            - name: "Install dependencies with Composer"
-              uses: "ramsey/composer-install@v3"
-              with:
-                  dependency-versions: "${{ matrix.dependencies }}"
+            -   name: "Install dependencies with Composer"
+                uses: "ramsey/composer-install@v3"
+                with:
+                    dependency-versions: "${{ matrix.dependencies }}"
 
-            - name: "Run PHPUnit"
-              run: "vendor/bin/phpunit"
+            -   name: "Run PHPUnit"
+                run: "vendor/bin/phpunit"

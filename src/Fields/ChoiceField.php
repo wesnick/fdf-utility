@@ -15,16 +15,6 @@ class ChoiceField extends PdfField
     {
         $value = $this->value ?? $this->defaultValue;
 
-        // TODO this code is never reached as value should not be array type!!!
-//        if (is_array($value) && $this->isMultiSelect()) {
-//            $out = '';
-//            foreach ($value as $val) {
-//                $out .= '(' . FdfWriter::escapePdfString($val) . ')';
-//            }
-//
-//            return '[ ' . $out . ' ]';
-//        }
-
         return sprintf('(%s%s%s)', chr(0xFE), chr(0xFF), FdfWriter::escapePdfString($value));
     }
 

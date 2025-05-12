@@ -75,8 +75,7 @@ abstract class PdfFieldTestCase extends TestCase
 
     public function setUp(): void
     {
-        $fixture      = __DIR__ . '/../../fixtures/pdftk_field_output.txt';
-        $parser       = new PdftkDumpParser($fixture);
+        $parser       = new PdftkDumpParser(__DIR__ . '/../../fixtures/pdftk_field_output.txt');
         $this->fields = $parser->parse();
     }
 }

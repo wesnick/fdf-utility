@@ -33,12 +33,6 @@ jobs:
 
             -   name: "Install dependencies with Composer"
                 uses: "ramsey/composer-install@v3"
-                with:
-                    composer-options: "${{ matrix.composer-options }}"
 
             -   name: "Run a static analysis with phpstan/phpstan"
                 run: "vendor/bin/phpstan analyse -c phpstan.neon.dist --no-progress --error-format=checkstyle | cs2pr"
-
-            -   name: "Run a static analysis with rector/rector"
-                run: "vendor/bin/rector --dry-run"
-                if: ${{ matrix.php-version == 8.4 }}
