@@ -95,8 +95,8 @@ class PdftkDumpParser
     private function nextBlockIndex(): bool
     {
         while ($this->currentIndex < count($this->currentContents) - 1) {
-            $index = $this->currentIndex;
-            $this->currentIndex++;
+//            $index = $this->currentIndex;
+            $index = $this->currentIndex++;
             if (str_starts_with($this->currentContents[$index], '---')) {
                 return true;
             }
