@@ -2,5 +2,7 @@ composer.lock
 composer.phar
 phpunit.xml
 .php_cs.cache
+.phpcs-cache
 .phpunit.result.cache
+phpstan.neon
 vendor/

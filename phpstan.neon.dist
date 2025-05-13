@@ -1,0 +1,12 @@
+parameters:
+    level: 8
+    ignoreErrors:
+    paths:
+        - src
+        - tests
+    excludePaths:
+        - tests/fixtures/*
+    reportUnmatchedIgnoredErrors: false
+# https://github.com/phpstan/phpstan-strict-rules
+    strictRules:
+        allRules: true
