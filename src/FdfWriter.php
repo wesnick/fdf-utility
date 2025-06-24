@@ -91,13 +91,13 @@ class FdfWriter implements \Stringable
     }
 
     /**
-     * @param array<string, PdfField|array<PdfField>> $fields
+     * @param array<string|int, PdfField|array<PdfField>> $fields
      */
     private function writeFields(array $fields): void
     {
         foreach ($fields as $key => $field) {
             if (is_array($field)) {
-                $this->appendKey($key);
+                $this->appendKey((string) $key);
                 $this->openKids();
                 $this->writeFields($field);
                 $this->closeKids();
@@ -105,7 +105,7 @@ class FdfWriter implements \Stringable
                 if ($field->isPushButton() || null === $field->getValue()) {
                     continue;
                 }
-                $this->appendKey($key);
+                $this->appendKey((string) $key);
                 $this->appendValue($field);
             }
         }
