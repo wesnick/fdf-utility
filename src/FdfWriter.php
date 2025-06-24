@@ -85,7 +85,8 @@ class FdfWriter implements \Stringable
     public static function escapePdfString(?string $string): string
     {
         // Create UTF-16BE string encode as ASCII hex
-        $utf16Value = mb_convert_encoding($string ?? '', 'UTF-16BE', 'UTF-8');
+        $string     ??= '';
+        $utf16Value = mb_convert_encoding($string, 'UTF-16BE', 'UTF-8');
 
         return strtr($utf16Value, ['(' => '\(', ')' => '\)', '\\' => '\\\\']);
     }
