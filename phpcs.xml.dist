@@ -119,7 +119,9 @@
             <property name="maxLineLength" value="120"/>
         </properties>
     </rule>
-    <rule ref="SlevomatCodingStandard.Exceptions"/>
+    <rule ref="SlevomatCodingStandard.Exceptions">
+        <exclude name="SlevomatCodingStandard.Exceptions.DisallowNonCapturingCatch"/>
+    </rule>
     <rule ref="SlevomatCodingStandard.Files">
         <exclude name="SlevomatCodingStandard.Files.FileLength"/>
     </rule>
