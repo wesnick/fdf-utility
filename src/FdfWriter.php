@@ -86,8 +86,9 @@ class FdfWriter implements \Stringable
     {
         // Create UTF-16BE string encode as ASCII hex
         $string ??= '';
-        $utf16Value = mb_convert_encoding($string, 'UTF-16BE', 'UTF-8');
-        if (false === $utf16Value) {
+        try {
+            $utf16Value = mb_convert_encoding($string, 'UTF-16BE', 'UTF-8');
+        } catch (\ValueError) {
             return $string;
         }
 
